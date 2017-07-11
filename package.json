@@ -1,0 +1,16 @@
+{
+  "name": "fsm-avalon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "123.js",
+  "scripts": {
+    "test": "mocha -w"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^4.0.2",
+    "mocha": "^3.4.2",
+    "redux": "^3.7.1"
+  }
+}
