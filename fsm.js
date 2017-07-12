@@ -1,5 +1,6 @@
 
-function makeFSMReducer(stateMap, actions, prefix = 'FSM/') {
+function makeFSMReducer(stateMap, actionMap, prefix = '') {
+
   const initState = {
     status: stateMap.start.status,
     value: stateMap.start.value,
@@ -31,25 +32,28 @@ function makeFSMReducer(stateMap, actions, prefix = 'FSM/') {
   }
 
 	let reducer = (state = initState, actionObj) => {
-    const { type } = actionObj;
-    if(type.slice(0, prefix.length) != prefix) {
+		
+    const { type : actionName } = actionObj;
+    if( !actionName ) {
       return state;
     }
-    const actionName = type.slice(prefix.length);
 
     const { status, value } = state;
+		
     const availableActions = stateMap.states[status];
+		
     if(!availableActions[actionName]) {
       const msg = `action ${actionName} is not available for status ${status}`;
       console.warn(msg);
       return state;
     }
-    const action = getAction(actions, actionName);
-
+    const action = getAction(actionMap, actionName);
+		
     // alow action to be no operation
     const nextValue = action(value, actionObj) || value;
     const nextStatus = transit(nextValue, availableActions[actionName]);
 		currentStatus = nextStatus;
+		
     return {
       status: nextStatus,
       value: nextValue,

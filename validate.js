@@ -15,3 +15,5 @@ const validateMission = (state, { index , mission }) => {
     )  return false ;
     return true ;
 }
+
+module.exports = validate;

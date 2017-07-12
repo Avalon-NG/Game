@@ -1,22 +1,63 @@
+const {
+	STATUS_BEFORE_INIT,
+	STATUS_INIT,
+	STATUS_TEAM_BUILD,
+	STATUS_TEAM_VOTING,
+	STATUS_TEAM_VOTED,
+	STATUS_MISSION,
+	STATUS_MISSION_FINISHED,
+	STATUS_GAMEOVER,
+	STATUS_ASSASSIN,
+	ACTION_INIT_GAME,
+	ACTION_START_ROUND,
+	ACTION_BUILD_TEAM,
+	ACTION_VOTE,
+	ACTION_DRAW_VOTE_RESULT,
+	ACTION_EXECUTE_MISSION,
+	ACTION_DRAW_MISSION_RESULT,
+	ACTION_ASSASSINATE,
+	INIT_MISSION_RESULTS,
+	INIT_CAPTAIN,
+	INIT_ASSASSINATED,
+	INIT_GODDESS_RESULTS,
+	NEEDED_FAILED_LIST,
+	ROLE_LIST,
+	NEEDED_KNIGHTS_LIST
+} = require('./config');
+
 const checkEndGame = (state) => {
-	if ( state.failedVotes >= 5 ) return 'GAMEOVER';
+	if ( state.failedVotes >= 5 ) return STATUS_GAMEOVER;
 	const sum = state.missionResults.reduce((total, n) => total + n, 0);
-	if ( sum <= -3 ) return 'GAMEOVER'; 
-	return 'TEAM_BUILD';
+	if ( sum <= -3 ) return STATUS_GAMEOVER; 
+	return STATUS_TEAM_BUILD;
 }
 
-const actions = {
-	START_ROUND : () => {},
-	BUILD_TEAM : (state,{knights}) => {
+const AVALON_ACTIONS = {
+	[ACTION_INIT_GAME] : (state, { users, isSetGoddess = false }) => {
+		const userAmount = users.length;
+		return Object.assign({},state,{
+			users : users.slice(0),
+			goddessResults : ( isSetGoddess === true ) ? [userAmount-1] : [],
+			neededKnights : NEEDED_KNIGHTS_LIST[userAmount].slice(0),
+			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0)
+		});
+	},
+	[ACTION_START_ROUND] : (state) => {
+		const userAmount = state.users.length;
+		return Object.assign({},state,{
+			votes : new Array(userAmount).fill(0),
+			missions : new Array(userAmount).fill(0)
+		})
+	},
+	[ACTION_BUILD_TEAM] : (state,{knights}) => {
 		return Object.assign({},state,{knights});
 	},
-	VOTE : (state,{ index , vote }) => {
+	[ACTION_VOTE] : (state,{ index , vote }) => {
 		const votes = state.votes.slice(0);
 		votes[index] = vote;
-
 		return Object.assign({},state,{votes});
 	},
-	DRAW_VOTE_RESULT : (state) => {
+	[ACTION_DRAW_VOTE_RESULT] : (state) => {
 		const sum = state.votes.reduce((total, n) => total + n, 0);
 		const failedVotes = state.failedVotes;
 		let missions = new Array(state.votes.length).fill(0);
@@ -31,14 +72,14 @@ const actions = {
 			missions
 		});
 	},
-	EXECUTE_MISSION : (state,{ index , mission }) => {
+	[ACTION_EXECUTE_MISSION] : (state,{ index , mission }) => {
 
 		const missions = state.missions.slice(0);
 		missions[index] = mission;
 
 		return Object.assign({},state,{missions});
 	},
-	DRAW_MISSION_RESULT : (state) => {
+	[ACTION_DRAW_MISSION_RESULT] : (state) => {
 		const round = state.missionResults.length;
 		const neededFailAmount = state.neededFails[round];
 		const sum = state.missions.reduce((total, n) => total + n, 0);
@@ -49,68 +90,88 @@ const actions = {
 
 		return Object.assign({},state,{ missionResults })
 	},
-	ASSASSINATE : (state,{assassinated}) => {
+	[ACTION_ASSASSINATE] : (state,{assassinated}) => {
 		return Object.assign({},state,{assassinated});
 	}
 };
 
-const stateMap = {
+/*
+
+	init begin start (same value all state)
+	missionResults,captain,goddessResults,assassinated
+
+	config begin start
+	users,votes,goddessResults,neededKnights,neededFails
+
+	init every round (same value all state)
+	knights, votes, votesResult,
+
+	config every round 
+	failedVotes,missions,missionResults,captain,goddessResults
+
+*/
+
+const AVALON_STATE_MAP = {
 	start : {
-		status : 'INIT',
+		status : STATUS_BEFORE_INIT,
 		value : {
 			users : [],
 			knights : [],
-			votes : [0,0,0,0,0], // 0 = waiting ,-1 = reject ,1 = approve
+			votes : [], // 0 = waiting ,-1 = reject ,1 = approve
 			votesResult : false,
 			failedVotes : 0,
-			missions : [0,0,0,0,0], // -1 = waiting , 0 = not knight or yes , 1 = no
-			missionResults : [], // -1 = fail , 0 = success  
-			captain : 0,
-			goddessResults : [6],
-			assassinated : -1,
-			neededKnights : [2,3,2,3,3],
-			neededFails : [1,1,1,2,1]
+			missions : [], // -1 = waiting , 0 = not knight or yes , 1 = no
+			missionResults : INIT_MISSION_RESULTS.slice(0), // -1 = fail , 0 = success  
+			captain : INIT_CAPTAIN,
+			goddessResults : INIT_GODDESS_RESULTS, // if no set, empty
+			assassinated : INIT_ASSASSINATED,
+			neededKnights : [],
+			neededFails : []
 		}
 	},
 	states : {
-		INIT : {
-			START_ROUND : checkEndGame,
+		[STATUS_BEFORE_INIT] : {
+			[ACTION_INIT_GAME] : STATUS_INIT
 		},
-		TEAM_BUILD : {
-			BUILD_TEAM : 'TEAM_VOTING'
+		[STATUS_INIT] : {
+			[ACTION_START_ROUND] : checkEndGame,
 		},
-		TEAM_VOTING : {
-			VOTE : (state) => {
+		[STATUS_TEAM_BUILD] : {
+			[ACTION_BUILD_TEAM] : STATUS_TEAM_VOTING
+		},
+		[STATUS_TEAM_VOTING] : {
+			[ACTION_VOTE] : (state) => {
 				const finished = state.votes.indexOf(0) < 0;
-				if ( !finished ) return 'TEAM_VOTING';
-				return 'TEAM_VOTED';
+				if ( !finished ) return STATUS_TEAM_VOTING;
+				return STATUS_TEAM_VOTED;
 			}
 		},
-		TEAM_VOTED : {
-			DRAW_VOTE_RESULT : (state) => {
-				if ( state.votesResult === true )	return 'MISSION'; 
-				return 'INIT';
+		[STATUS_TEAM_VOTED] : {
+			[ACTION_DRAW_VOTE_RESULT] : (state) => {
+				if ( state.votesResult === true )	return STATUS_MISSION; 
+				return STATUS_INIT;
 			}
 		},
-		MISSION : {
-			EXECUTE_MISSION : (state) => {
+		STATUS_MISSION : {
+			[ACTION_EXECUTE_MISSION] : (state) => {
 				const finished = state.missions.indexOf(-1) < 0;
-				if ( !finished ) return 'MISSION';
-				return 'MISSION_FINISHED';
+				if ( !finished ) return STATUS_MISSION;
+				return STATUS_MISSION_FINISHED;
 			}
 		},
-		MISSION_FINISHED : {
-			DRAW_MISSION_RESULT : 'INIT'
+		[STATUS_MISSION_FINISHED] : {
+			[ACTION_DRAW_MISSION_RESULT] : STATUS_INIT
 		},
-		ASSASSIN : {
-			ASSASSINATE : 'GAMEOVER'
+		ACTION_DRAW_VOTE_RESULT : {
+			[ACTION_ASSASSINATE] : STATUS_GAMEOVER
 		},
-		GAMEOVER : {
+		[STATUS_GAMEOVER] : {
 		}
 	}
 }
 
+
 module.exports = {
-	stateMap,
-	actions
+	AVALON_STATE_MAP,
+	AVALON_ACTIONS
 }
