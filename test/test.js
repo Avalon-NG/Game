@@ -24,16 +24,14 @@ const {
   initGame,
   startRound,
   buildTeam,
-  vote
+  vote,
+  drawVotesResult
 } = require('../actions');
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_DEFAULT_MISSIONS_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_USER_7 = [0,1,2,3,4,5,6];
 const TEST_VALUE_KNIGHTS_7_1 = [0,1]; 
-
-
-
 
 const ACTION_INIT_GAME = 'ACTION_INIT_GAME';
 const ACTION_START_ROUND = 'ACTION_START_ROUND';
@@ -52,6 +50,7 @@ const ACTION_VOTE_4_FAIL = 'ACTION_VOTE_4_FAIL';
 const ACTION_VOTE_5_FAIL = 'ACTION_VOTE_5_FAIL';
 const ACTION_VOTE_6_FAIL = 'ACTION_VOTE_6_FAIL';
 const ACTION_VOTE_7_FAIL = 'ACTION_VOTE_7_FAIL';
+const ACTION_DRAW_VOTES_RESULT = 'ACTION_DRAW_VOTES_RESULT';
 
 const ACTION_MAP = {
   [ACTION_INIT_GAME] : initGame({ users : TEST_VALUE_USER_7 }),
@@ -71,14 +70,8 @@ const ACTION_MAP = {
   [ACTION_VOTE_6_FAIL] : vote({ index : 5 , vote : -1 }),
   [ACTION_VOTE_7_SUCCESS] : vote({ index : 6 , vote : 1 }),
   [ACTION_VOTE_7_FAIL] : vote({ index : 6 , vote : -1 }),
+  [ACTION_DRAW_VOTES_RESULT] : drawVotesResult()
 }
-
-// const TEST_STEPS_BEFORE_INIT = 'TEST_STEPS_BEFORE_INIT';
-// const TEST_STEPS_INIT = 'TEST_STEPS_INIT';
-// const TEST_STEPS_FIRST_ROUND = 'TEST_STEPS_FIRST_ROUND';
-// const TEST_STEPS_FIRST_BUILD_TEAM = 'TEST_STEPS_FIRST_BUILD_TEAM';
-// const TEST_STEPS_FIRST_USER_VOTE_SUCCESS = 'TEST_STEPS_FIRST_USER_VOTE_SUCCESS';
-// const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = 'TEST_STEPS_FIRST_DRAWRESULT_SUCCESS';
 
 const TEST_STEPS_BEFORE_INIT = [];
 const TEST_STEPS_INIT = [ACTION_INIT_GAME];
@@ -94,7 +87,8 @@ const TEST_STEPS_ALL_SUCCESS = [
   ACTION_VOTE_6_SUCCESS,
   ACTION_VOTE_7_SUCCESS
 ];
-const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_ALL_SUCCESS);
+const TEST_STEPS_FIRST_ALL_VOTED = TEST_STEPS_FIRST_BUILD_TEAM.slice(0).concat(TEST_STEPS_ALL_SUCCESS.slice(0));
+const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = TEST_STEPS_FIRST_ALL_VOTED.slice(0).concat(ACTION_DRAW_VOTES_RESULT);
 
 const reducer = makeFSMReducer(AVALON_STATE_MAP,AVALON_ACTIONS,'FSM/');
 
@@ -133,6 +127,12 @@ describe('basic 7 people game',()=>{
     it('neededFails should be same as NEEDED_FAILED_LIST',()=>{
       expect(value.neededFails).deep.equal(NEEDED_FAILED_LIST[7]);
     })
+    it('failedVotes should be 0',()=>{
+      expect(value.failedVotes).equal(0);
+    })
+    it('captain should be -1',()=>{
+      expect(value.captain).equal(-1);
+    })
   })
 
   describe('first round, begin to choose knights',() => {
@@ -146,6 +146,9 @@ describe('basic 7 people game',()=>{
     })
     it('users should be the same as TEST_VALUE_DEFAULT_MISSIONS_7',()=>{
       expect(value.missions).deep.equal(TEST_VALUE_DEFAULT_MISSIONS_7);
+    })
+    it('captain should be 0',()=>{
+      expect(value.captain).equal(0);
     })
   })
 
@@ -173,7 +176,7 @@ describe('basic 7 people game',()=>{
   })
 
   describe('first round, all user vote success',() => {
-    let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_SUCCESS);
+    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED);
     const { status, value } = state; 
     it('status should be team voted',()=>{
       expect(status).equal(STATUS_TEAM_VOTED);
@@ -183,19 +186,23 @@ describe('basic 7 people game',()=>{
     })
   })
 
+  describe('first round, draw all sucess votes result',() => {
+    let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_SUCCESS);
+    const { status, value } = state; 
+    it('status should be mission',()=>{
+      expect(status).equal(STATUS_MISSION);
+    })
+    it('failVotes should all be 0',()=>{
+      expect(value.failedVotes).equal(0);
+    })
+    it('votesResult should be true',()=>{
+      expect(value.votesResult).equal(true);
+    })
+    it('missions',() => {
+      let shouldMissions = TEST_VALUE_DEFAULT_MISSIONS_7.slice(0);
+      TEST_VALUE_KNIGHTS_7_1.forEach((el) => { shouldMissions[el] = -1 });
+      expect(value.missions).deep.equal(shouldMissions);
+    })
+  })
+
 })
-
-
-// store.dispatch({ type : 'FSM/START_ROUND' });
-// expect
-// store.dispatch({ type : 'FSM/BUILD_TEAM' , knights : [1,2,3] });
-// store.dispatch({ type : 'FSM/VOTE' , index : 1 , vote : 1 });
-// store.dispatch({ type : 'FSM/VOTE' , index : 2 , vote : 1 });
-// store.dispatch({ type : 'FSM/VOTE' , index : 3 , vote : 1 });
-// store.dispatch({ type : 'FSM/VOTE' , index : 4 , vote : 1 });
-// store.dispatch({ type : 'FSM/VOTE' , index : 0 , vote : 1 });
-// store.dispatch({ type : 'FSM/DRAW_VOTE_RESULT' });
-// store.dispatch({ type : 'FSM/EXECUTE_MISSION' , index : 1 , mission : 0 });
-// store.dispatch({ type : 'FSM/EXECUTE_MISSION' , index : 2 , mission : 0 });
-// store.dispatch({ type : 'FSM/EXECUTE_MISSION' , index : 3 , mission : 0 });
-// store.dispatch({ type : 'FSM/DRAW_MISSION_RESULT' });

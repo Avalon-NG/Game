@@ -15,9 +15,9 @@ const {
 	ACTION_START_ROUND,
 	ACTION_BUILD_TEAM,
 	ACTION_VOTE,
-	ACTION_DRAW_VOTE_RESULT,
+	ACTION_DRAW_VOTES_RESULT,
 	ACTION_EXECUTE_MISSION,
-	ACTION_DRAW_MISSION_RESULT,
+	ACTION_DRAW_MISSIONS_RESULT,
 	ACTION_ASSASSINATE,
 	INIT_MISSION_RESULTS,
 	INIT_CAPTAIN,
@@ -54,9 +54,16 @@ const vote = ({ index , vote }) => {
 	}
 }
 
+const drawVotesResult = () => {
+	return {
+		type : ACTION_DRAW_VOTES_RESULT
+	}
+}
+
 module.exports = {
 	initGame,
 	startRound,
 	buildTeam,
-	vote
+	vote,
+	drawVotesResult
 }

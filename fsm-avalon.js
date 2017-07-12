@@ -12,12 +12,13 @@ const {
 	ACTION_START_ROUND,
 	ACTION_BUILD_TEAM,
 	ACTION_VOTE,
-	ACTION_DRAW_VOTE_RESULT,
+	ACTION_DRAW_VOTES_RESULT,
 	ACTION_EXECUTE_MISSION,
-	ACTION_DRAW_MISSION_RESULT,
+	ACTION_DRAW_MISSIONS_RESULT,
 	ACTION_ASSASSINATE,
 	INIT_MISSION_RESULTS,
 	INIT_CAPTAIN,
+	INIT_FAIL_VOTES,
 	INIT_ASSASSINATED,
 	INIT_GODDESS_RESULTS,
 	NEEDED_FAILED_LIST,
@@ -39,14 +40,17 @@ const AVALON_ACTIONS = {
 			users : users.slice(0),
 			goddessResults : ( isSetGoddess === true ) ? [userAmount-1] : [],
 			neededKnights : NEEDED_KNIGHTS_LIST[userAmount].slice(0),
-			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0)
+			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0),
+			failVotes : INIT_FAIL_VOTES,
+			captain : INIT_CAPTAIN
 		});
 	},
 	[ACTION_START_ROUND] : (state) => {
 		const userAmount = state.users.length;
 		return Object.assign({},state,{
 			votes : new Array(userAmount).fill(0),
-			missions : new Array(userAmount).fill(0)
+			missions : new Array(userAmount).fill(0),
+			captain : ( state.captain >= userAmount - 1 ) ? state.captain + 1 : 0
 		})
 	},
 	[ACTION_BUILD_TEAM] : (state,{knights}) => {
@@ -57,18 +61,15 @@ const AVALON_ACTIONS = {
 		votes[index] = vote;
 		return Object.assign({},state,{votes});
 	},
-	[ACTION_DRAW_VOTE_RESULT] : (state) => {
-		const sum = state.votes.reduce((total, n) => total + n, 0);
-		const failedVotes = state.failedVotes;
-		let missions = new Array(state.votes.length).fill(0);
-		const knights = state.knights;
-		knights.forEach((el)=>{
-			missions[el] = -1;
-		})
+	[ACTION_DRAW_VOTES_RESULT] : (state) => {
+		const { failedVotes, knights, users , captain, votes } = state;
+		const voteSum = votes.reduce((total, n) => total + n, 0);
+		const userAmount = users.length;
+		let missions = new Array(userAmount).fill(0);
+		knights.forEach((el)=>{ missions[el] = -1; });
 		return Object.assign({},state, {
-			failedVotes : ( sum > 0 ) ? 0 : failedVotes + 1,
-			votesResult : sum > 0,
-			captain : ( state.captain >= state.users.length - 1 ) ? state.captain + 1 : 0,
+			failedVotes : ( voteSum > 0 ) ? 0 : failedVotes + 1,
+			votesResult : voteSum > 0,
 			missions
 		});
 	},
@@ -79,7 +80,7 @@ const AVALON_ACTIONS = {
 
 		return Object.assign({},state,{missions});
 	},
-	[ACTION_DRAW_MISSION_RESULT] : (state) => {
+	[ACTION_DRAW_MISSIONS_RESULT] : (state) => {
 		const round = state.missionResults.length;
 		const neededFailAmount = state.neededFails[round];
 		const sum = state.missions.reduce((total, n) => total + n, 0);
@@ -147,12 +148,12 @@ const AVALON_STATE_MAP = {
 			}
 		},
 		[STATUS_TEAM_VOTED] : {
-			[ACTION_DRAW_VOTE_RESULT] : (state) => {
+			[ACTION_DRAW_VOTES_RESULT] : (state) => {
 				if ( state.votesResult === true )	return STATUS_MISSION; 
 				return STATUS_INIT;
 			}
 		},
-		STATUS_MISSION : {
+		[STATUS_MISSION] : {
 			[ACTION_EXECUTE_MISSION] : (state) => {
 				const finished = state.missions.indexOf(-1) < 0;
 				if ( !finished ) return STATUS_MISSION;
@@ -160,9 +161,9 @@ const AVALON_STATE_MAP = {
 			}
 		},
 		[STATUS_MISSION_FINISHED] : {
-			[ACTION_DRAW_MISSION_RESULT] : STATUS_INIT
+			[ACTION_DRAW_MISSIONS_RESULT] : STATUS_INIT
 		},
-		ACTION_DRAW_VOTE_RESULT : {
+		[STATUS_ASSASSIN] : {
 			[ACTION_ASSASSINATE] : STATUS_GAMEOVER
 		},
 		[STATUS_GAMEOVER] : {
