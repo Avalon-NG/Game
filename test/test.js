@@ -1,4 +1,4 @@
-const makeFSMReducer = require('../fsm');
+const makeFSMReducer = require('fsm-reducer');
 const { expect } = require('chai');
 const { AVALON_STATE_MAP , AVALON_ACTIONS } = require('../fsm-avalon');
 const { 
@@ -87,8 +87,20 @@ const TEST_STEPS_ALL_SUCCESS = [
   ACTION_VOTE_6_SUCCESS,
   ACTION_VOTE_7_SUCCESS
 ];
-const TEST_STEPS_FIRST_ALL_VOTED = TEST_STEPS_FIRST_BUILD_TEAM.slice(0).concat(TEST_STEPS_ALL_SUCCESS.slice(0));
-const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = TEST_STEPS_FIRST_ALL_VOTED.slice(0).concat(ACTION_DRAW_VOTES_RESULT);
+const TEST_STEPS_ALL_FAIL = [
+  ACTION_VOTE_1_FAIL,
+  ACTION_VOTE_2_FAIL,
+  ACTION_VOTE_3_FAIL,
+  ACTION_VOTE_4_FAIL,
+  ACTION_VOTE_5_FAIL,
+  ACTION_VOTE_6_FAIL,
+  ACTION_VOTE_7_FAIL
+];
+const TEST_STEPS_FIRST_ALL_VOTED_SUCCESS = TEST_STEPS_FIRST_BUILD_TEAM.slice(0).concat(TEST_STEPS_ALL_SUCCESS.slice(0));
+const TEST_STEPS_FIRST_ALL_VOTED_FAIL = TEST_STEPS_FIRST_BUILD_TEAM.slice(0).concat(TEST_STEPS_ALL_FAIL.slice(0));
+const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = TEST_STEPS_FIRST_ALL_VOTED_SUCCESS.slice(0).concat(ACTION_DRAW_VOTES_RESULT);
+const TEST_STEPS_FIRST_DRAWRESULT_FAIL = TEST_STEPS_FIRST_ALL_VOTED_FAIL.slice(0).concat(ACTION_DRAW_VOTES_RESULT);
+const TEST_STEPS_VOTE_5_FAIL = [TEST_STEPS_FIRST_ALL_VOTED_FAIL.slice(0).concat(ACTION_DRAW_VOTES_RESULT)];
 
 const reducer = makeFSMReducer(AVALON_STATE_MAP,AVALON_ACTIONS,'FSM/');
 
@@ -176,7 +188,7 @@ describe('basic 7 people game',()=>{
   })
 
   describe('first round, all user vote success',() => {
-    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED);
+    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED_SUCCESS);
     const { status, value } = state; 
     it('status should be team voted',()=>{
       expect(status).equal(STATUS_TEAM_VOTED);
@@ -186,7 +198,20 @@ describe('basic 7 people game',()=>{
     })
   })
 
-  describe('first round, draw all sucess votes result',() => {
+
+  describe('first round, all user vote failed',() => {
+    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED_FAIL);
+    const { status, value } = state; 
+    it('status should be team voted',()=>{
+      expect(status).equal(STATUS_TEAM_VOTED);
+    })
+    it('votes should all be 1',()=>{
+      expect(value.votes.slice(0,7).every((el) => el === -1)).equal(true);
+    })
+  })
+
+
+  describe('first round, draw all success votes result',() => {
     let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_SUCCESS);
     const { status, value } = state; 
     it('status should be mission',()=>{
@@ -198,10 +223,24 @@ describe('basic 7 people game',()=>{
     it('votesResult should be true',()=>{
       expect(value.votesResult).equal(true);
     })
-    it('missions',() => {
+    it('missions should all be 0, except knight be -1',() => {
       let shouldMissions = TEST_VALUE_DEFAULT_MISSIONS_7.slice(0);
       TEST_VALUE_KNIGHTS_7_1.forEach((el) => { shouldMissions[el] = -1 });
       expect(value.missions).deep.equal(shouldMissions);
+    })
+  })
+
+  describe('first round, draw all fail votes result',() => {
+    let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_FAIL);
+    const { status, value } = state; 
+    it('status should be init',()=>{
+      expect(status).equal(STATUS_INIT);
+    })
+    it('failVotes should all be 1',()=>{
+      expect(value.failedVotes).equal(1);
+    })
+    it('votesResult should be false',()=>{
+      expect(value.votesResult).equal(false);
     })
   })
 

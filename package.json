@@ -2,7 +2,7 @@
   "name": "fsm-avalon",
   "version": "1.0.0",
   "description": "",
-  "main": "123.js",
+  "main": "fsm-avalon.js",
   "scripts": {
     "test": "mocha -w"
   },
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "chai": "^4.0.2",
+    "fsm-reducer": "^1.0.0",
     "mocha": "^3.4.2",
     "redux": "^3.7.1"
   }
