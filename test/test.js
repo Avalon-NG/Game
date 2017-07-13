@@ -99,7 +99,8 @@ const TEST_STEPS_VOTES_ALL_FAIL = [
   ACTION_VOTE_6_SUCCESS,
   ACTION_VOTE_7_SUCCESS
 ];
-const TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT = TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS).concat(ACTION_DRAW_VOTES_RESULT);
+
+const TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT = TEST_STEPS_VOTES_ALL_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT);
 const TEST_STEPS_VOTES_ALL_FAIL_DRAWRESULT = TEST_STEPS_VOTES_ALL_FAIL.concat(ACTION_DRAW_VOTES_RESULT);
 const TEST_STEPS_ONE_VOTE_ROUND = [ACTION_START_ROUND,ACTION_BUILD_TEAM];
 const TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT = TEST_STEPS_ONE_VOTE_ROUND.concat(TEST_STEPS_VOTES_ALL_FAIL).concat(ACTION_DRAW_VOTES_RESULT);
@@ -118,15 +119,14 @@ const TEST_STEPS_VOTE_5_FAIL =
   .concat(TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT)
   .concat(ACTION_START_ROUND);
 
-
 const reducer = makeFSMReducer(STATE_MAP,ACTIONS);
 
-const testHelper = (testSteps) => {
-  let state = reducer(undefined,{});
+const testHelper = (testSteps, state) => {
+  let _state = state && Object.assign({},state) || reducer(undefined,{});
   testSteps.forEach((el) => {
-    state = reducer(state,ACTION_MAP[el]);
+    _state = reducer(_state,ACTION_MAP[el]);
   })
-  return state;
+  return _state;
 }
 
 describe('basic 7 people game',()=>{
@@ -266,7 +266,7 @@ describe('basic 7 people game',()=>{
   })
   
   describe('first round, draw all success votes result',() => {
-    let state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
+    let state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
     const { status, value } = state; 
     it('status should be mission',()=>{
       expect(status).equal(STATUS_MISSION);
@@ -285,7 +285,7 @@ describe('basic 7 people game',()=>{
   })
   
   describe('excute mission',() => {
-    const state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
     describe('do one mission',() => {      
       it('should return correct state',() => {
         const _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
@@ -306,28 +306,39 @@ describe('basic 7 people game',()=>{
     })
   })
 
-  // describe('draw missions result',() => {
-  //   const state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
-  //   describe('mission success',() => {
-  //     let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
-  //     _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
-  //     _state = reducer(_state,drawMissionsResult());
-  //     it('should return correct state',() => {
-  //       const { status, value } = _state;
-  //       expect(status).equal(STATUS_INIT);
-  //       expect(value.missionResults).deep.equal([{ amount : 2 , result : 1 }]);
-  //     })
-  //   })
-  //   describe('mission fail',() => {
-  //     let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
-  //     _state = reducer(_state,executeMission({ index : 0 , mission : -1 }));
-  //     _state = reducer(_state,drawMissionsResult());
-  //     it('should return correct state',() => {
-  //       const { status, value } = _state;
-  //       expect(status).equal(STATUS_INIT);
-  //       expect(value.missionResults).deep.equal([{ amount : 2 , result : -1 }]);
-  //     })
-  //   })
-  // })
+  describe('draw missions result',() => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
+    describe('mission success',() => {
+      let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
+      _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
+      _state = reducer(_state,drawMissionsResult());
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_INIT);
+        expect(value.missionResults).deep.equal([{ result : true , failAmount : 0 , successAmount : 2 }]);
+      })
+    })
+    describe('mission fail',() => {
+      let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
+      _state = reducer(_state,executeMission({ index : 0 , mission : -1 }));
+      _state = reducer(_state,drawMissionsResult());
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_INIT);
+        expect(value.missionResults).deep.equal([{ result : false , failAmount : 1 , successAmount : 1 }]);
+      })
+    })
+  })
+
+  describe('gameover',() => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
+    describe('reach 3 missions fail',() => {
+      let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
+      _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
+      _state = reducer(_state,drawMissionsResult());
+      _state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT,_state);
+      //console.log(_state);
+    })
+  })
 
 })

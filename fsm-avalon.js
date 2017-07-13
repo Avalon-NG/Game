@@ -87,11 +87,13 @@ const ACTIONS = {
 	[ACTION_DRAW_MISSIONS_RESULT] : (state) => {
 		const round = state.missionResults.length;
 		const neededFailAmount = state.neededFails[round];
-		const missionSum = state.missions.filter((el) => el !== undefined ).reduce((total, n) => total + n, 0);
-		
-		const missionResults = ( neededFailAmount <= missionSum ) ? 
-			[].concat(state.missionResults, { result : 1, amount : missionSum }) :
-			[].concat(state.missionResults, { result : -1,	amount : missionSum })
+		const failAmount = state.missions.filter((el) => el === -1 ).reduce((total, n) => total - n, 0);
+		const successAmount = state.missions.filter((el) => el === 1 ).reduce((total, n) => total + n, 0);
+		const missionResults = state.missionResults.concat({
+			failAmount,
+			successAmount,
+			result : successAmount - failAmount > neededFailAmount
+		});
 
 		return Object.assign({},state,{ missionResults })
 	},
