@@ -33,16 +33,19 @@ const checkEndGame = (state) => {
 	return STATUS_TEAM_BUILD;
 }
 
-const AVALON_ACTIONS = {
+const ACTIONS = {
 	[ACTION_INIT_GAME] : (state, { users, isSetGoddess = false }) => {
 		const userAmount = users.length;
 		return Object.assign({},state,{
 			users : users.slice(0),
-			goddessResults : ( isSetGoddess === true ) ? [userAmount-1] : [],
+			config : {
+				isSetGoddess
+			},
+			goddessResults : [userAmount-1],
 			neededKnights : NEEDED_KNIGHTS_LIST[userAmount].slice(0),
 			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0),
-			failVotes : INIT_FAIL_VOTES,
-			captain : INIT_CAPTAIN
+			failVotes : 0,
+			captain : -1
 		});
 	},
 	[ACTION_START_ROUND] : (state) => {
@@ -50,7 +53,7 @@ const AVALON_ACTIONS = {
 		return Object.assign({},state,{
 			votes : new Array(userAmount).fill(0),
 			missions : new Array(userAmount).fill(0),
-			captain : ( state.captain >= userAmount - 1 ) ? state.captain + 1 : 0
+			captain : (state.captain + 1) % userAmount
 		})
 	},
 	[ACTION_BUILD_TEAM] : (state,{knights}) => {
@@ -65,8 +68,9 @@ const AVALON_ACTIONS = {
 		const { failedVotes, knights, users , captain, votes } = state;
 		const voteSum = votes.reduce((total, n) => total + n, 0);
 		const userAmount = users.length;
-		let missions = new Array(userAmount).fill(0);
-		knights.forEach((el)=>{ missions[el] = -1; });
+		let missions = new Array(userAmount).fill(undefined).map((el,i) => {
+			return knights.indexOf(i) >= 0 ? 0 : undefined ;
+		});
 		return Object.assign({},state, {
 			failedVotes : ( voteSum > 0 ) ? 0 : failedVotes + 1,
 			votesResult : voteSum > 0,
@@ -75,7 +79,7 @@ const AVALON_ACTIONS = {
 	},
 	[ACTION_EXECUTE_MISSION] : (state,{ index , mission }) => {
 
-		const missions = state.missions.slice(0);
+		let missions = state.missions.slice(0);
 		missions[index] = mission;
 
 		return Object.assign({},state,{missions});
@@ -83,11 +87,11 @@ const AVALON_ACTIONS = {
 	[ACTION_DRAW_MISSIONS_RESULT] : (state) => {
 		const round = state.missionResults.length;
 		const neededFailAmount = state.neededFails[round];
-		const sum = state.missions.reduce((total, n) => total + n, 0);
+		const missionSum = state.missions.filter((el) => el !== undefined ).reduce((total, n) => total + n, 0);
 		
-		const missionResults = ( neededFailAmount <= sum ) ? 
-			[].concat(state.missionResults, { result : -1,	amount : sum }) :
-			[].concat(state.missionResults, { result : 0,	amount : sum })
+		const missionResults = ( neededFailAmount <= missionSum ) ? 
+			[].concat(state.missionResults, { result : 1, amount : missionSum }) :
+			[].concat(state.missionResults, { result : -1,	amount : missionSum })
 
 		return Object.assign({},state,{ missionResults })
 	},
@@ -112,7 +116,7 @@ const AVALON_ACTIONS = {
 
 */
 
-const AVALON_STATE_MAP = {
+const STATE_MAP = {
 	start : {
 		status : STATUS_BEFORE_INIT,
 		value : {
@@ -121,8 +125,8 @@ const AVALON_STATE_MAP = {
 			votes : [], // 0 = waiting ,-1 = reject ,1 = approve
 			votesResult : false,
 			failedVotes : 0,
-			missions : [], // -1 = waiting , 0 = not knight or yes , 1 = no
-			missionResults : INIT_MISSION_RESULTS.slice(0), // -1 = fail , 0 = success  
+			missions : [], // undefined = no , 0 = waiting, -1 = fail , 1 = success , 
+			missionResults : INIT_MISSION_RESULTS.slice(0), // -1 = fail , 1 = success  
 			captain : INIT_CAPTAIN,
 			goddessResults : INIT_GODDESS_RESULTS, // if no set, empty
 			assassinated : INIT_ASSASSINATED,
@@ -155,7 +159,7 @@ const AVALON_STATE_MAP = {
 		},
 		[STATUS_MISSION] : {
 			[ACTION_EXECUTE_MISSION] : (state) => {
-				const finished = state.missions.indexOf(-1) < 0;
+				const finished = state.missions.indexOf(0) < 0;
 				if ( !finished ) return STATUS_MISSION;
 				return STATUS_MISSION_FINISHED;
 			}
@@ -173,6 +177,6 @@ const AVALON_STATE_MAP = {
 
 
 module.exports = {
-	AVALON_STATE_MAP,
-	AVALON_ACTIONS
+	STATE_MAP,
+	ACTIONS
 }

@@ -1,17 +1,22 @@
 {
   "name": "fsm-avalon",
-  "version": "1.0.0",
-  "description": "",
-  "main": "fsm-avalon.js",
+  "version": "1.0.1",
+  "description": "Avalon game logic state machine",
+  "main": "index.js",
   "scripts": {
     "test": "mocha -w"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "jeno5980515",
+  "license": "MIT",
+  "repository": {
+    "type": "https",
+    "url": "https://github.com/avalon-ng/fsm-avalon"
+  },
   "dependencies": {
+    "fsm-reducer": "^1.0.1"
+  },
+  "devDependencies":{
     "chai": "^4.0.2",
-    "fsm-reducer": "^1.0.0",
-    "mocha": "^3.4.2",
-    "redux": "^3.7.1"
+    "mocha": "^3.4.2"
   }
 }

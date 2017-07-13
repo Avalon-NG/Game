@@ -60,10 +60,26 @@ const drawVotesResult = () => {
 	}
 }
 
+const executeMission = ({ index, mission }) => {
+	return {
+		type : ACTION_EXECUTE_MISSION,
+		index,
+		mission
+	}
+}
+
+const drawMissionsResult = () => {
+	return {
+		type : ACTION_DRAW_MISSIONS_RESULT
+	}
+}
+
 module.exports = {
 	initGame,
 	startRound,
 	buildTeam,
 	vote,
-	drawVotesResult
+	drawVotesResult,
+	executeMission,
+	drawMissionsResult
 }
