@@ -33,11 +33,14 @@ const {
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_DEFAULT_MISSIONS_7 = [undefined,undefined,undefined,undefined,undefined,undefined,undefined];
 const TEST_VALUE_USER_7 = [0,1,2,3,4,5,6];
-const TEST_VALUE_KNIGHTS_7_1 = [0,1]; 
 
 const ACTION_INIT_GAME = 'ACTION_INIT_GAME';
 const ACTION_START_ROUND = 'ACTION_START_ROUND';
-const ACTION_BUILD_TEAM = 'ACTION_BUILD_TEAM';
+const ACTION_BUILD_TEAM_7_1 = 'ACTION_BUILD_TEAM_7_1';
+const ACTION_BUILD_TEAM_7_2 = 'ACTION_BUILD_TEAM_7_2';
+const ACTION_BUILD_TEAM_7_3 = 'ACTION_BUILD_TEAM_7_3';
+const ACTION_BUILD_TEAM_7_4 = 'ACTION_BUILD_TEAM_7_4';
+const ACTION_BUILD_TEAM_7_5 = 'ACTION_BUILD_TEAM_7_5';
 const ACTION_VOTE_1_SUCCESS = 'ACTION_VOTE_1_SUCCESS';
 const ACTION_VOTE_2_SUCCESS = 'ACTION_VOTE_2_SUCCESS';
 const ACTION_VOTE_3_SUCCESS = 'ACTION_VOTE_3_SUCCESS';
@@ -74,7 +77,11 @@ const ACTION_DRAW_MISSIONS_RESULT = 'ACTION_DRAW_MISSIONS_RESULT';
 const ACTION_MAP = {
   [ACTION_INIT_GAME] : initGame({ users : TEST_VALUE_USER_7 }),
   [ACTION_START_ROUND] : startRound(),
-  [ACTION_BUILD_TEAM] : buildTeam({ knights : TEST_VALUE_KNIGHTS_7_1 }),
+  [ACTION_BUILD_TEAM_7_1] : buildTeam({ knights : [0,1] }),
+  [ACTION_BUILD_TEAM_7_2] : buildTeam({ knights : [0,1,2] }),
+  [ACTION_BUILD_TEAM_7_3] : buildTeam({ knights : [0,1,2] }),
+  [ACTION_BUILD_TEAM_7_4] : buildTeam({ knights : [0,1,2,3] }),
+  [ACTION_BUILD_TEAM_7_5] : buildTeam({ knights : [0,1,2,3] }),
   [ACTION_VOTE_1_SUCCESS] : vote({ index : 0 , vote : 1 }),
   [ACTION_VOTE_1_FAIL] : vote({ index : 0 , vote : -1 }),
   [ACTION_VOTE_2_SUCCESS] : vote({ index : 1 , vote : 1 }),
@@ -110,8 +117,8 @@ const ACTION_MAP = {
 const TEST_STEPS_BEFORE_INIT = [];
 const TEST_STEPS_INIT = [ACTION_INIT_GAME];
 const TEST_STEPS_FIRST_ROUND = [ACTION_INIT_GAME,ACTION_START_ROUND];
-const TEST_STEPS_FIRST_BUILD_TEAM = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM];
-const TEST_STEPS_FIRST_USER_VOTE_SUCCESS = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM,ACTION_VOTE_1_SUCCESS];
+const TEST_STEPS_FIRST_BUILD_TEAM = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1];
+const TEST_STEPS_FIRST_USER_VOTE_SUCCESS = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1,ACTION_VOTE_1_SUCCESS];
 
 const TEST_STEPS_VOTES_ALL_SUCCESS = [
   ACTION_VOTE_1_FAIL,
@@ -134,7 +141,7 @@ const TEST_STEPS_VOTES_ALL_FAIL = [
 
 const TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT = TEST_STEPS_VOTES_ALL_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT);
 const TEST_STEPS_VOTES_ALL_FAIL_DRAWRESULT = TEST_STEPS_VOTES_ALL_FAIL.concat(ACTION_DRAW_VOTES_RESULT);
-const TEST_STEPS_ONE_VOTE_ROUND = [ACTION_START_ROUND,ACTION_BUILD_TEAM];
+const TEST_STEPS_ONE_VOTE_ROUND = [ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1];
 const TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT = TEST_STEPS_ONE_VOTE_ROUND.concat(TEST_STEPS_VOTES_ALL_FAIL).concat(ACTION_DRAW_VOTES_RESULT);
 
 const TEST_STEPS_FIRST_ALL_VOTED_SUCCESS = TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS);
@@ -150,6 +157,75 @@ const TEST_STEPS_VOTE_5_FAIL =
   .concat(TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT)
   .concat(TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT)
   .concat(ACTION_START_ROUND);
+
+const TEST_STEPS_MISSIONS_SUCCESS_1 = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS
+]
+
+const TEST_STEPS_MISSIONS_FAIL_1 = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_FAIL
+]
+
+const TEST_STEPS_MISSIONS_SUCCESS_1_DRAWRESULT = 
+  TEST_STEPS_MISSIONS_SUCCESS_1.concat(ACTION_DRAW_MISSIONS_RESULT);
+
+const TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT = 
+  TEST_STEPS_MISSIONS_FAIL_1.concat(ACTION_DRAW_MISSIONS_RESULT);
+
+const TEST_STEPS_MISSIONS_SUCCESS_2_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_SUCCESS,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_FAIL,
+  ACTION_MISSION_3_FAIL,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_SUCCESS,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_FAIL_3_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_FAIL,
+  ACTION_MISSION_3_SUCCESS,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_SUCCESS,
+  ACTION_MISSION_4_FAIL,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_FAIL_4_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_FAIL,
+  ACTION_MISSION_4_FAIL,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_SUCCESS_5_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_SUCCESS,
+  ACTION_MISSION_4_SUCCESS,
+  ACTION_DRAW_MISSIONS_RESULT
+]
+const TEST_STEPS_MISSIONS_FAIL_5_DRAWRESULT = [
+  ACTION_MISSION_1_SUCCESS,
+  ACTION_MISSION_2_SUCCESS,
+  ACTION_MISSION_3_FAIL,
+  ACTION_MISSION_4_SUCCESS,
+  ACTION_DRAW_MISSIONS_RESULT
+]
 
 const reducer = makeFSMReducer(STATE_MAP,ACTIONS);
 
@@ -230,7 +306,7 @@ describe('basic 7 people game',()=>{
       expect(status).equal(STATUS_TEAM_VOTING);
     })
     it('knights should be the same as TEST_VALUE_DEFAULT_VOTES_7',()=>{
-      expect(value.knights).deep.equal(TEST_VALUE_KNIGHTS_7_1);
+      expect(value.knights).deep.equal([0,1]);
     })
   })
 
@@ -320,9 +396,7 @@ describe('basic 7 people game',()=>{
       expect(value.votesResult).equal(true);
     })
     it('missions should init to undefined, knights be 0',() => {
-      let shouldMissions = TEST_VALUE_DEFAULT_MISSIONS_7.slice(0);
-      TEST_VALUE_KNIGHTS_7_1.forEach((el) => { shouldMissions[el] = 0 });
-      expect(value.missions).deep.equal(shouldMissions);
+      expect(value.missions).deep.equal([0,0,undefined,undefined,undefined,undefined,undefined]);
     })
   })
   
@@ -378,15 +452,41 @@ describe('basic 7 people game',()=>{
     })
   })
 
-  // describe('gameover',() => {
-  //   const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
-  //   describe('reach 3 missions fail',() => {
-  //     let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
-  //     _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
-  //     _state = reducer(_state,drawMissionsResult());
-  //     _state = testHelper(_state,TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
-  //     //console.log(_state);
-  //   })
-  // })
+  describe('gameover',() => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
+    describe('reach 3 missions fail',() => {
+      let _state = testHelper(state,
+        TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_2  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_3  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_4  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_5  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_FAIL_5_DRAWRESULT)
+        .concat(ACTION_START_ROUND));
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_GAMEOVER);
+      })
+    })
+  })
 
 })

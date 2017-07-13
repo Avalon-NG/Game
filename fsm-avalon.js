@@ -28,8 +28,9 @@ const {
 
 const checkEndGame = (state) => {
 	if ( state.failedVotes >= 5 ) return STATUS_GAMEOVER;
-	const sum = state.missionResults.reduce((total, n) => total + n, 0);
-	if ( sum <= -3 ) return STATUS_GAMEOVER; 
+	const failedMissionsAmount = state.missionResults.filter((el) => el.result === false ).length;
+
+	if ( failedMissionsAmount >= 3 ) return STATUS_GAMEOVER; 
 	return STATUS_TEAM_BUILD;
 }
 
@@ -92,7 +93,7 @@ const ACTIONS = {
 		const missionResults = state.missionResults.concat({
 			failAmount,
 			successAmount,
-			result : successAmount - failAmount > neededFailAmount
+			result : neededFailAmount > failAmount
 		});
 
 		return Object.assign({},state,{ missionResults })
