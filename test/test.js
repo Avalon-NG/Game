@@ -306,28 +306,28 @@ describe('basic 7 people game',()=>{
     })
   })
 
-  describe('draw missions result',() => {
-    const state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
-    describe('mission success',() => {
-      let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
-      _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
-      _state = reducer(_state,drawMissionsResult());
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_INIT);
-        expect(value.missionResults).deep.equal([{ amount : 2 , result : 1 }]);
-      })
-    })
-    describe('mission fail',() => {
-      let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
-      _state = reducer(_state,executeMission({ index : 0 , mission : -1 }));
-      _state = reducer(_state,drawMissionsResult());
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_INIT);
-        expect(value.missionResults).deep.equal([{ amount : 2 , result : -1 }]);
-      })
-    })
-  })
+  // describe('draw missions result',() => {
+  //   const state = testHelper(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT);
+  //   describe('mission success',() => {
+  //     let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
+  //     _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
+  //     _state = reducer(_state,drawMissionsResult());
+  //     it('should return correct state',() => {
+  //       const { status, value } = _state;
+  //       expect(status).equal(STATUS_INIT);
+  //       expect(value.missionResults).deep.equal([{ amount : 2 , result : 1 }]);
+  //     })
+  //   })
+  //   describe('mission fail',() => {
+  //     let _state = reducer(state,executeMission({ index : 1 , mission : 1 }));
+  //     _state = reducer(_state,executeMission({ index : 0 , mission : -1 }));
+  //     _state = reducer(_state,drawMissionsResult());
+  //     it('should return correct state',() => {
+  //       const { status, value } = _state;
+  //       expect(status).equal(STATUS_INIT);
+  //       expect(value.missionResults).deep.equal([{ amount : 2 , result : -1 }]);
+  //     })
+  //   })
+  // })
 
 })

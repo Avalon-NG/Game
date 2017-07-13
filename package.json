@@ -4,7 +4,8 @@
   "description": "Avalon game logic state machine",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -w"
+    "test": "mocha -w",
+    "test:ci" : "mocha"
   },
   "author": "jeno5980515",
   "license": "MIT",
