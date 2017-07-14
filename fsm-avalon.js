@@ -28,9 +28,12 @@ const {
 
 const checkEndGame = (state) => {
 	if ( state.failedVotes >= 5 ) return STATUS_GAMEOVER;
-	const failedMissionsAmount = state.missionResults.filter((el) => el.result === false ).length;
 
+	const failedMissionsAmount = state.missionResults.filter((el) => el.result === false ).length;
+	const succeedMissionsAmount = state.missionResults.filter((el) => el.result === true ).length;
 	if ( failedMissionsAmount >= 3 ) return STATUS_GAMEOVER; 
+	if ( succeedMissionsAmount >= 3 ) return STATUS_ASSASSIN; 
+
 	return STATUS_TEAM_BUILD;
 }
 

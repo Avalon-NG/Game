@@ -487,6 +487,39 @@ describe('basic 7 people game',()=>{
         expect(status).equal(STATUS_GAMEOVER);
       })
     })
+    describe('reach 3 missions success',() => {
+      let _state = testHelper(state,
+        TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_2  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_3  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_4  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
+        .concat([
+          ACTION_START_ROUND,
+          ACTION_BUILD_TEAM_7_5  
+        ])
+        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+        .concat(TEST_STEPS_MISSIONS_SUCCESS_5_DRAWRESULT)
+        .concat(ACTION_START_ROUND));
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_ASSASSIN);
+      })
+    });
   })
 
 })
