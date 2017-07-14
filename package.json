@@ -1,7 +1,7 @@
 {
   "name": "fsm-avalon",
-  "version": "1.0.1",
-  "description": "Avalon game logic state machine",
+  "version": "1.0.2",
+  "description": "Avalon game logic state machine for fsm-reducer",
   "main": "index.js",
   "scripts": {
     "test": "mocha -w",
