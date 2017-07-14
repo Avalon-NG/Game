@@ -1,3 +1,5 @@
+
+
 const validate = () => {
 
 }
@@ -14,6 +16,16 @@ const validateMission = (state, { index , mission }) => {
       || ( mission !== 0 && mission !== 1 )
     )  return false ;
     return true ;
+}
+
+const validateInitGame = (state, { users, goddessResults, neededKnights, neededFails}) => {
+  const userAmount = users.length;
+  
+
+      users,
+      goddessResults,
+      neededKnights,
+      neededFails
 }
 
 module.exports = validate;

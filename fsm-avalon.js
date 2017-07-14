@@ -24,11 +24,14 @@ const {
 	INIT_GODDESS_RESULTS,
 	NEEDED_FAILED_LIST,
 	ROLE_LIST,
-	NEEDED_KNIGHTS_LIST
+	NEEDED_KNIGHTS_LIST,
+	ROLE_MERLIN
 } = require('./config');
 
 const checkAssassinate = (state) => {
-
+	const { assassinated , users } = state;
+	const isCorrect = users[assassinated].role === ROLE_MERLIN;
+	return isCorrect ? STATUS_GAMEOVER_FAIL : STATUS_GAMEOVER_SUCCESS;
 }
 
 const checkEndGame = (state) => {
@@ -108,8 +111,10 @@ const ACTIONS = {
 			missionResults
 		 })
 	},
-	[ACTION_ASSASSINATE] : (state,{assassinated}) => {
-		return Object.assign({},state,{assassinated});
+	[ACTION_ASSASSINATE] : (state,{ index }) => {
+		return Object.assign({},state,{
+			assassinated : index 
+		});
 	}
 };
 

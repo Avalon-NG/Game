@@ -18,7 +18,8 @@ const {
 	INIT_MISSION_RESULTS,
 	INIT_CAPTAIN,
 	INIT_ASSASSINATED,
-	INIT_GODDESS_RESULTS
+	INIT_GODDESS_RESULTS,
+  ROLE_MERLIN
 } = require('../config');
 const validate = require('../validate');
 const { 
@@ -34,7 +35,29 @@ const {
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_DEFAULT_MISSIONS_7 = [undefined,undefined,undefined,undefined,undefined,undefined,undefined];
-const TEST_VALUE_USER_7 = [0,1,2,3,4,5,6];
+const TEST_VALUE_USER_7 = 
+  [{
+    align : 1,
+    role : ROLE_MERLIN
+  },{
+    align : 1,
+    role : 'Normal'
+  },{
+    align : 1,
+    role : 'Normal'
+  },{
+    align : 1,
+    role : 'Normal'
+  },{
+    align : -1,
+    role : 'Normal'
+  },{
+    align : -1,
+    role : 'Normal'
+  },{
+    align : -1,
+    role : 'Normal'
+  }];
 
 const ACTION_INIT_GAME = 'ACTION_INIT_GAME';
 const ACTION_START_ROUND = 'ACTION_START_ROUND';
@@ -117,8 +140,8 @@ const ACTION_MAP = {
   [ACTION_MISSION_6_FAIL] : executeMission({ index : 5 , mission : -1 }),
   [ACTION_MISSION_7_FAIL] : executeMission({ index : 6 , mission : -1 }),
   [ACTION_DRAW_MISSIONS_RESULT] : drawMissionsResult(),
-  [ACTION_ASSASSIN_SUCCESS] : assassin(),
-  [ACTION_ASSASSIN_FAIL] : assassin()
+  [ACTION_ASSASSIN_SUCCESS] : assassin(0),
+  [ACTION_ASSASSIN_FAIL] : assassin(1)
 }
 
 const TEST_STEPS_BEFORE_INIT = [];
@@ -549,8 +572,19 @@ describe('basic 7 people game',()=>{
 
   describe('assassin', () => {
     const state = testHelper(TEST_STEPS_ASSASSIN);
-    describe('assassin merlin', () => {
-
+    describe('assassin correct', () => {
+      const _state = testHelper(state,ACTION_ASSASSIN_SUCCESS);
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_GAMEOVER_FAIL);
+      })
+    })
+    describe('assassin fail', () => {
+      const _state = testHelper(state,ACTION_ASSASSIN_FAIL);
+      it('should return correct state',() => {
+        const { status, value } = _state;
+        expect(status).equal(STATUS_GAMEOVER_SUCCESS);
+      })
     })
   })
 
