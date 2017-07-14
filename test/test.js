@@ -12,7 +12,8 @@ const {
 	STATUS_TEAM_VOTED,
 	STATUS_MISSION,
 	STATUS_MISSION_FINISHED,
-	STATUS_GAMEOVER,
+	STATUS_GAMEOVER_SUCCESS,
+  STATUS_GAMEOVER_FAIL,
 	STATUS_ASSASSIN,
 	INIT_MISSION_RESULTS,
 	INIT_CAPTAIN,
@@ -307,9 +308,6 @@ describe('basic 7 people game',()=>{
     it('captain should be -1',()=>{
       expect(value.captain).equal(-1);
     })
-    it('winner should be 0',()=>{
-      expect(value.winner).equal(0);
-    })
   })
 
   describe('first round, begin to choose knights',() => {
@@ -363,7 +361,7 @@ describe('basic 7 people game',()=>{
     let state = testHelper(TEST_STEPS_VOTE_5_FAIL);
     const { status, value } = state; 
     it('status should be gameover',()=>{
-      expect(status).equal(STATUS_GAMEOVER);
+      expect(status).equal(STATUS_GAMEOVER_FAIL);
     })
     it('failVotes should all be 5',()=>{
       expect(value.failedVotes).equal(5);
@@ -373,9 +371,6 @@ describe('basic 7 people game',()=>{
     })
     it('captain should be 5',()=>{
       expect(value.captain).equal(5);
-    })
-    it('winner should be -1',()=>{
-      expect(value.winner).equal(-1);
     })
   })
 
@@ -514,7 +509,7 @@ describe('basic 7 people game',()=>{
         .concat(ACTION_START_ROUND));
       it('should return correct state',() => {
         const { status, value } = _state;
-        expect(status).equal(STATUS_GAMEOVER);
+        expect(status).equal(STATUS_GAMEOVER_FAIL);
       })
     })
     describe('reach 3 missions success',() => {

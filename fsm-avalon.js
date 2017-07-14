@@ -6,7 +6,8 @@ const {
 	STATUS_TEAM_VOTED,
 	STATUS_MISSION,
 	STATUS_MISSION_FINISHED,
-	STATUS_GAMEOVER,
+	STATUS_GAMEOVER_SUCCESS,
+	STATUS_GAMEOVER_FAIL,
 	STATUS_ASSASSIN,
 	ACTION_INIT_GAME,
 	ACTION_START_ROUND,
@@ -26,12 +27,16 @@ const {
 	NEEDED_KNIGHTS_LIST
 } = require('./config');
 
+const checkAssassinate = (state) => {
+
+}
+
 const checkEndGame = (state) => {
-	if ( state.failedVotes >= 5 ) return STATUS_GAMEOVER;
+	if ( state.failedVotes >= 5 ) return STATUS_GAMEOVER_FAIL;
 
 	const failedMissionsAmount = state.missionResults.filter((el) => el.result === false ).length;
 	const succeedMissionsAmount = state.missionResults.filter((el) => el.result === true ).length;
-	if ( failedMissionsAmount >= 3 ) return STATUS_GAMEOVER; 
+	if ( failedMissionsAmount >= 3 ) return STATUS_GAMEOVER_FAIL; 
 	if ( succeedMissionsAmount >= 3 ) return STATUS_ASSASSIN; 
 
 	return STATUS_TEAM_BUILD;
@@ -49,8 +54,7 @@ const ACTIONS = {
 			neededKnights : NEEDED_KNIGHTS_LIST[userAmount].slice(0),
 			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0),
 			failVotes : 0,
-			captain : -1,
-			winner : 0
+			captain : -1
 		});
 	},
 	[ACTION_START_ROUND] : (state) => {
@@ -76,12 +80,10 @@ const ACTIONS = {
 		const missions = new Array(userAmount).fill(undefined).map((el,i) => {
 			return knights.indexOf(i) >= 0 ? 0 : undefined ;
 		});
-		const winner = ( failedVotes + 1 >= 5 ) ? -1 : 0;
 		return Object.assign({},state, {
 			failedVotes : ( voteSum > 0 ) ? 0 : failedVotes + 1,
 			votesResult : voteSum > 0,
-			missions,
-			winner
+			missions
 		});
 	},
 	[ACTION_EXECUTE_MISSION] : (state,{ index , mission }) => {
@@ -102,7 +104,9 @@ const ACTIONS = {
 			result : neededFailAmount > failAmount
 		});
 
-		return Object.assign({},state,{ missionResults })
+		return Object.assign({},state,{ 
+			missionResults
+		 })
 	},
 	[ACTION_ASSASSINATE] : (state,{assassinated}) => {
 		return Object.assign({},state,{assassinated});
@@ -177,9 +181,12 @@ const STATE_MAP = {
 			[ACTION_DRAW_MISSIONS_RESULT] : STATUS_INIT
 		},
 		[STATUS_ASSASSIN] : {
-			[ACTION_ASSASSINATE] : STATUS_GAMEOVER
+			[ACTION_ASSASSINATE] : checkAssassinate
 		},
-		[STATUS_GAMEOVER] : {
+		[STATUS_GAMEOVER_SUCCESS] : {
+		},
+		[STATUS_GAMEOVER_FAIL] : {
+
 		}
 	}
 }
