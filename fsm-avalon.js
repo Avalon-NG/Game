@@ -49,7 +49,8 @@ const ACTIONS = {
 			neededKnights : NEEDED_KNIGHTS_LIST[userAmount].slice(0),
 			neededFails : NEEDED_FAILED_LIST[userAmount].slice(0),
 			failVotes : 0,
-			captain : -1
+			captain : -1,
+			winner : 0
 		});
 	},
 	[ACTION_START_ROUND] : (state) => {
@@ -72,13 +73,15 @@ const ACTIONS = {
 		const { failedVotes, knights, users , captain, votes } = state;
 		const voteSum = votes.reduce((total, n) => total + n, 0);
 		const userAmount = users.length;
-		let missions = new Array(userAmount).fill(undefined).map((el,i) => {
+		const missions = new Array(userAmount).fill(undefined).map((el,i) => {
 			return knights.indexOf(i) >= 0 ? 0 : undefined ;
 		});
+		const winner = ( failedVotes + 1 >= 5 ) ? -1 : 0;
 		return Object.assign({},state, {
 			failedVotes : ( voteSum > 0 ) ? 0 : failedVotes + 1,
 			votesResult : voteSum > 0,
-			missions
+			missions,
+			winner
 		});
 	},
 	[ACTION_EXECUTE_MISSION] : (state,{ index , mission }) => {

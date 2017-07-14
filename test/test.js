@@ -27,7 +27,8 @@ const {
   vote,
   drawVotesResult,
   executeMission,
-  drawMissionsResult
+  drawMissionsResult,
+  assassin
 } = require('../actions');
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
@@ -74,6 +75,9 @@ const ACTION_MISSION_7_FAIL = 'ACTION_MISSION_7_FAIL';
 
 const ACTION_DRAW_MISSIONS_RESULT = 'ACTION_DRAW_MISSIONS_RESULT';
 
+const ACTION_ASSASSIN_SUCCESS = 'ACTION_ASSASSIN_SUCCESS';
+const ACTION_ASSASSIN_FAIL = 'ACTION_ASSASSIN_FAIL';
+
 const ACTION_MAP = {
   [ACTION_INIT_GAME] : initGame({ users : TEST_VALUE_USER_7 }),
   [ACTION_START_ROUND] : startRound(),
@@ -111,7 +115,9 @@ const ACTION_MAP = {
   [ACTION_MISSION_5_FAIL] : executeMission({ index : 4 , mission : -1 }),
   [ACTION_MISSION_6_FAIL] : executeMission({ index : 5 , mission : -1 }),
   [ACTION_MISSION_7_FAIL] : executeMission({ index : 6 , mission : -1 }),
-  [ACTION_DRAW_MISSIONS_RESULT] : drawMissionsResult()
+  [ACTION_DRAW_MISSIONS_RESULT] : drawMissionsResult(),
+  [ACTION_ASSASSIN_SUCCESS] : assassin(),
+  [ACTION_ASSASSIN_FAIL] : assassin()
 }
 
 const TEST_STEPS_BEFORE_INIT = [];
@@ -227,6 +233,24 @@ const TEST_STEPS_MISSIONS_FAIL_5_DRAWRESULT = [
   ACTION_DRAW_MISSIONS_RESULT
 ]
 
+const TEST_STEPS_ASSASSIN = 
+  TEST_STEPS_FIRST_BUILD_TEAM
+  .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+  .concat(TEST_STEPS_MISSIONS_SUCCESS_1_DRAWRESULT)
+  .concat([
+    ACTION_START_ROUND,
+    ACTION_BUILD_TEAM_7_2  
+  ])
+  .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+  .concat(TEST_STEPS_MISSIONS_SUCCESS_2_DRAWRESULT)
+  .concat([
+    ACTION_START_ROUND,
+    ACTION_BUILD_TEAM_7_3  
+  ])
+  .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+  .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
+  .concat(ACTION_START_ROUND);
+
 const reducer = makeFSMReducer(STATE_MAP,ACTIONS);
 
 const testHelper = (state, testSteps) => {
@@ -282,6 +306,9 @@ describe('basic 7 people game',()=>{
     })
     it('captain should be -1',()=>{
       expect(value.captain).equal(-1);
+    })
+    it('winner should be 0',()=>{
+      expect(value.winner).equal(0);
     })
   })
 
@@ -346,6 +373,9 @@ describe('basic 7 people game',()=>{
     })
     it('captain should be 5',()=>{
       expect(value.captain).equal(5);
+    })
+    it('winner should be -1',()=>{
+      expect(value.winner).equal(-1);
     })
   })
 
@@ -520,6 +550,13 @@ describe('basic 7 people game',()=>{
         expect(status).equal(STATUS_ASSASSIN);
       })
     });
+  })
+
+  describe('assassin', () => {
+    const state = testHelper(TEST_STEPS_ASSASSIN);
+    describe('assassin merlin', () => {
+
+    })
   })
 
 })

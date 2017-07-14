@@ -74,6 +74,13 @@ const drawMissionsResult = () => {
 	}
 }
 
+const assassin = ( index ) => {
+	return {
+		type : ACTION_ASSASSINATE,
+		index
+	}
+}
+
 module.exports = {
 	initGame,
 	startRound,
@@ -81,5 +88,6 @@ module.exports = {
 	vote,
 	drawVotesResult,
 	executeMission,
-	drawMissionsResult
+	drawMissionsResult,
+	assassin
 }
