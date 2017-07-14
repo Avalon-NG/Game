@@ -294,155 +294,176 @@ const testHelper = (state, testSteps) => {
 describe('basic 7 people game',()=>{
 
   describe('before init',() => {
-    let state = testHelper(TEST_STEPS_BEFORE_INIT);
-    it('status should be before init',()=>{
+    const state = testHelper(TEST_STEPS_BEFORE_INIT);
+    it('should return correct state',()=>{
       expect(state.status).equal(STATUS_BEFORE_INIT);
     })
   })
 
   describe('init game',() => {
-    let state = testHelper(TEST_STEPS_INIT);
+    const state = testHelper(TEST_STEPS_INIT);
     const { status, value } = state; 
-    it('status should be init',()=>{
+    it('should return correct state',() => {
       expect(status).equal(STATUS_INIT);
-    })
-    it('users should be the same as TEST_VALUE_USER_7',()=>{
       expect(value.users).deep.equal(TEST_VALUE_USER_7);
-    })
-    it('isSetGoddess should be default false',()=>{
       expect(value.config.isSetGoddess).equal(false);
-    })
-    it('goddessResults should only with the last index',()=>{
       expect(value.goddessResults).deep.equal([6]);
-    })
-    it('neededKnights should be same as NEEDED_KNIGHTS_LIST',()=>{
       expect(value.neededKnights).deep.equal(NEEDED_KNIGHTS_LIST[7]);
-    })
-    it('neededFails should be same as NEEDED_FAILED_LIST',()=>{
       expect(value.neededFails).deep.equal(NEEDED_FAILED_LIST[7]);
-    })
-    it('failedVotes should be 0',()=>{
       expect(value.failedVotes).equal(0);
-    })
-    it('captain should be -1',()=>{
       expect(value.captain).equal(-1);
     })
   })
 
-  describe('first round, begin to choose knights',() => {
-    let state = testHelper(TEST_STEPS_FIRST_ROUND);
+  describe('start round',() => {
+    describe('not end game',() => {
+      const state = testHelper(TEST_STEPS_FIRST_ROUND);
+      const { status, value } = state; 
+      it('should return correct state',() => {
+        expect(status).equal(STATUS_TEAM_BUILD);
+        expect(value.votes).deep.equal(TEST_VALUE_DEFAULT_VOTES_7);
+        expect(value.captain).equal(0);
+      });
+    })
+
+    describe('end game',() => {
+      const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
+
+      describe('all fail votes 5 times',() => {
+        const state = testHelper(TEST_STEPS_VOTE_5_FAIL);
+        const { status, value } = state; 
+        it('should return correct state',() => {
+          expect(status).equal(STATUS_GAMEOVER_FAIL);
+          expect(value.failedVotes).equal(5);
+          expect(value.votesResult).equal(false);
+          expect(value.captain).equal(5);
+        });
+      })
+
+      describe('reach 3 missions fail',() => {
+        let _state = testHelper(state,
+          TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_2  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_3  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_4  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_5  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_FAIL_5_DRAWRESULT)
+          .concat(ACTION_START_ROUND));
+        it('should return correct state',() => {
+          const { status, value } = _state;
+          expect(status).equal(STATUS_GAMEOVER_FAIL);
+        })
+      })
+      describe('reach 3 missions success',() => {
+        let _state = testHelper(state,
+          TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_2  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_3  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_4  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
+          .concat([
+            ACTION_START_ROUND,
+            ACTION_BUILD_TEAM_7_5  
+          ])
+          .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
+          .concat(TEST_STEPS_MISSIONS_SUCCESS_5_DRAWRESULT)
+          .concat(ACTION_START_ROUND));
+        it('should return correct state',() => {
+          const { status, value } = _state;
+          expect(status).equal(STATUS_ASSASSIN);
+        })
+      });
+    })
+  })
+
+  describe('choose knights',() => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
     const { status, value } = state; 
-    it('status should be team build',()=>{
-      expect(status).equal(STATUS_TEAM_BUILD);
-    })
-    it('users should be the same as TEST_VALUE_DEFAULT_VOTES_7',()=>{
+    it('should return correct state',() => {
+      expect(status).equal(STATUS_TEAM_VOTING);
       expect(value.votes).deep.equal(TEST_VALUE_DEFAULT_VOTES_7);
-    })
-    it('captain should be 0',()=>{
       expect(value.captain).equal(0);
     })
   })
 
-  describe('first round, after build team, begin to vote',() => {
-    let state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
+  describe('vote', () => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
     const { status, value } = state; 
-    it('status should be team voting',()=>{
-      expect(status).equal(STATUS_TEAM_VOTING);
+    describe('one user vote', () => {    
+      const _state = testHelper(state,ACTION_VOTE_1_SUCCESS);  
+      const { status, value } = _state; 
+      it('should return correct state', () => {
+        expect(status).equal(STATUS_TEAM_VOTING);
+        expect(value.votes[0]).equal(1);
+        expect(value.votes[1]).equal(0);
+        expect(value.votes[2]).equal(0);
+      })
+    });
+    describe('all user vote',() => {
+      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_SUCCESS);
+      const { status, value } = _state; 
+      it('should return correct state',()=>{
+        expect(status).equal(STATUS_TEAM_VOTED);
+      })
+    });
+  })
+
+  describe('draw vote result',() => {
+    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
+    describe('vote failed',() => {
+      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_FAIL.concat(ACTION_DRAW_VOTES_RESULT));
+      const { status, value } = _state; 
+      it('should return correct state',() => {
+        expect(status).equal(STATUS_INIT);
+        expect(value.failedVotes).equal(1);
+        expect(value.votesResult).equal(false);
+      });
     })
-    it('knights should be the same as TEST_VALUE_DEFAULT_VOTES_7',()=>{
-      expect(value.knights).deep.equal([0,1]);
+    describe('vote succeed',() => {
+      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT));
+      const { status, value } = _state; 
+      it('should return correct state',() => {
+        expect(status).equal(STATUS_MISSION);
+        expect(value.failedVotes).equal(0);
+        expect(value.votesResult).equal(true);
+        expect(value.missions).deep.equal([0,0,undefined,undefined,undefined,undefined,undefined]);
+      });
     })
   })
 
-  describe('first round, all user vote failed',() => {
-    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED_FAIL);
-    const { status, value } = state; 
-    it('status should be team voted',()=>{
-      expect(status).equal(STATUS_TEAM_VOTED);
-    })
-  })
-
-  describe('first round, draw all fail votes result',() => {
-    let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_FAIL);
-    const { status, value } = state; 
-    it('status should be init',()=>{
-      expect(status).equal(STATUS_INIT);
-    })
-    it('failVotes should all be 1',()=>{
-      expect(value.failedVotes).equal(1);
-    })
-    it('votesResult should be false',()=>{
-      expect(value.votesResult).equal(false);
-    })
-  })
-
-  describe('all fail votes 5 times',() => {
-    let state = testHelper(TEST_STEPS_VOTE_5_FAIL);
-    const { status, value } = state; 
-    it('status should be gameover',()=>{
-      expect(status).equal(STATUS_GAMEOVER_FAIL);
-    })
-    it('failVotes should all be 5',()=>{
-      expect(value.failedVotes).equal(5);
-    })
-    it('votesResult should be false',()=>{
-      expect(value.votesResult).equal(false);
-    })
-    it('captain should be 5',()=>{
-      expect(value.captain).equal(5);
-    })
-  })
-
-  describe('first round, draw all fail votes result',() => {
-    let state = testHelper(TEST_STEPS_FIRST_DRAWRESULT_FAIL);
-    const { status, value } = state; 
-    it('status should be init',()=>{
-      expect(status).equal(STATUS_INIT);
-    })
-    it('failVotes should all be 1',()=>{
-      expect(value.failedVotes).equal(1);
-    })
-    it('votesResult should be false',()=>{
-      expect(value.votesResult).equal(false);
-    })
-  })
-
-  describe('first round, first user vote success',() => {
-    let state = testHelper(TEST_STEPS_FIRST_USER_VOTE_SUCCESS);
-    const { status, value } = state; 
-    it('status should be team voting',()=>{
-      expect(status).equal(STATUS_TEAM_VOTING);
-    })
-    it('votes should only first be 1, others are 0',()=>{
-      expect(value.votes[0]).equal(1);
-      expect(value.votes.slice(1,7).every((el) => el === 0)).equal(true);
-    })
-  })
-
-  describe('first round, all user vote success',() => {
-    let state = testHelper(TEST_STEPS_FIRST_ALL_VOTED_SUCCESS);
-    const { status, value } = state; 
-    it('status should be team voted',()=>{
-      expect(status).equal(STATUS_TEAM_VOTED);
-    })
-  })
-  
-  describe('first round, draw all success votes result',() => {
-    let state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
-    const { status, value } = state; 
-    it('status should be mission',()=>{
-      expect(status).equal(STATUS_MISSION);
-    })
-    it('failVotes should all be 0',()=>{
-      expect(value.failedVotes).equal(0);
-    })
-    it('votesResult should be true',()=>{
-      expect(value.votesResult).equal(true);
-    })
-    it('missions should init to undefined, knights be 0',() => {
-      expect(value.missions).deep.equal([0,0,undefined,undefined,undefined,undefined,undefined]);
-    })
-  })
   
   describe('excute mission',() => {
     const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
@@ -494,76 +515,6 @@ describe('basic 7 people game',()=>{
         expect(value.missionResults).deep.equal([{ result : false , failAmount : 1 , successAmount : 1 }]);
       })
     })
-  })
-
-  describe('gameover',() => {
-    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT));
-    describe('reach 3 missions fail',() => {
-      let _state = testHelper(state,
-        TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_2  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_3  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_4  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_5  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_FAIL_5_DRAWRESULT)
-        .concat(ACTION_START_ROUND));
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_GAMEOVER_FAIL);
-      })
-    })
-    describe('reach 3 missions success',() => {
-      let _state = testHelper(state,
-        TEST_STEPS_MISSIONS_FAIL_1_DRAWRESULT
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_2  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_FAIL_2_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_3  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_4  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_SUCCESS_4_DRAWRESULT)
-        .concat([
-          ACTION_START_ROUND,
-          ACTION_BUILD_TEAM_7_5  
-        ])
-        .concat(TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT)
-        .concat(TEST_STEPS_MISSIONS_SUCCESS_5_DRAWRESULT)
-        .concat(ACTION_START_ROUND));
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_ASSASSIN);
-      })
-    });
   })
 
   describe('assassin', () => {
