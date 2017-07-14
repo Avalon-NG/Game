@@ -17,13 +17,7 @@ const {
 	ACTION_EXECUTE_MISSION,
 	ACTION_DRAW_MISSIONS_RESULT,
 	ACTION_ASSASSINATE,
-	INIT_MISSION_RESULTS,
-	INIT_CAPTAIN,
-	INIT_FAIL_VOTES,
-	INIT_ASSASSINATED,
-	INIT_GODDESS_RESULTS,
 	NEEDED_FAILED_LIST,
-	ROLE_LIST,
 	NEEDED_KNIGHTS_LIST,
 	ROLE_MERLIN
 } = require('./config');
@@ -118,22 +112,6 @@ const ACTIONS = {
 	}
 };
 
-/*
-
-	init begin start (same value all state)
-	missionResults,captain,goddessResults,assassinated
-
-	config begin start
-	users,votes,goddessResults,neededKnights,neededFails
-
-	init every round (same value all state)
-	knights, votes, votesResult,
-
-	config every round 
-	failedVotes,missions,missionResults,captain,goddessResults
-
-*/
-
 const STATE_MAP = {
 	start : {
 		status : STATUS_BEFORE_INIT,
@@ -144,10 +122,10 @@ const STATE_MAP = {
 			votesResult : false,
 			failedVotes : 0,
 			missions : [], // undefined = no , 0 = waiting, -1 = fail , 1 = success , 
-			missionResults : INIT_MISSION_RESULTS.slice(0), // -1 = fail , 1 = success  
-			captain : INIT_CAPTAIN,
-			goddessResults : INIT_GODDESS_RESULTS, // if no set, empty
-			assassinated : INIT_ASSASSINATED,
+			missionResults : [], // -1 = fail , 1 = success  
+			captain : -1,
+			goddessResults : [], 
+			assassinated : -1,
 			neededKnights : [],
 			neededFails : []
 		}

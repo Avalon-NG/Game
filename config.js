@@ -12,14 +12,15 @@ const NEEDED_KNIGHTS_LIST = [
 	[3,4,4,5,5]
 ]
 
-const ROLE_LIST = [0,1,2,3,4,
-	["梅林","好人","好人","刺客","壞人"],
-	["梅林","好人","好人","好人","刺客","壞人"],
-	["梅林","好人","好人","好人","刺客","壞人","壞人"],
-	["梅林","好人","好人","好人","好人","刺客","壞人","壞人"],
-	["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人"],
-	["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人","壞人"]
-]
+// should be outsude of fsm
+// const ROLE_LIST = [0,1,2,3,4,
+// 	["梅林","好人","好人","刺客","壞人"],
+// 	["梅林","好人","好人","好人","刺客","壞人"],
+// 	["梅林","好人","好人","好人","刺客","壞人","壞人"],
+// 	["梅林","好人","好人","好人","好人","刺客","壞人","壞人"],
+// 	["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人"],
+// 	["梅林","好人","好人","好人","好人","好人","刺客","壞人","壞人","壞人"]
+// ]
 
 const NEEDED_FAILED_LIST = [
 	[1,1,1,1,1],
@@ -54,18 +55,11 @@ const	ACTION_EXECUTE_MISSION = 'FSM/ACTION_EXECUTE_MISSION';
 const	ACTION_DRAW_MISSIONS_RESULT = 'FSM/ACTION_DRAW_MISSIONS_RESULT';
 const	ACTION_ASSASSINATE = 'FSM/ACTION_ASSASSINATE';
 
-const INIT_MISSION_RESULTS = [];
-const INIT_FAIL_VOTES = 0;
-const INIT_CAPTAIN = -1;
-const INIT_ASSASSINATED = -1;
-const INIT_GODDESS_RESULTS = [];
-
 const ROLE_MERLIN = 'ROLE_MERLIN';
 
 module.exports = {
 	NEEDED_FAILED_LIST,
 	NEEDED_KNIGHTS_LIST,
-	ROLE_LIST,
 	STATUS_BEFORE_INIT,
 	STATUS_INIT,
 	STATUS_TEAM_BUILD,
@@ -84,10 +78,5 @@ module.exports = {
 	ACTION_EXECUTE_MISSION,
 	ACTION_DRAW_MISSIONS_RESULT,
 	ACTION_ASSASSINATE,
-	INIT_MISSION_RESULTS,
-	INIT_FAIL_VOTES,
-	INIT_CAPTAIN,
-	INIT_ASSASSINATED,
-	INIT_GODDESS_RESULTS,
 	ROLE_MERLIN
 }

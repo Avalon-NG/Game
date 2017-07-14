@@ -2,7 +2,6 @@ const makeFSMReducer = require('fsm-reducer');
 const { expect } = require('chai');
 const { STATE_MAP , ACTIONS } = require('../fsm-avalon');
 const { 
-  ROLE_LIST, 
   NEEDED_KNIGHTS_LIST, 
   NEEDED_FAILED_LIST,
   STATUS_BEFORE_INIT,
@@ -15,13 +14,11 @@ const {
 	STATUS_GAMEOVER_SUCCESS,
   STATUS_GAMEOVER_FAIL,
 	STATUS_ASSASSIN,
-	INIT_MISSION_RESULTS,
-	INIT_CAPTAIN,
-	INIT_ASSASSINATED,
-	INIT_GODDESS_RESULTS,
   ROLE_MERLIN
 } = require('../config');
-const validate = require('../validate');
+
+//const validate = require('../validate');
+
 const { 
   initGame,
   startRound,
@@ -34,7 +31,6 @@ const {
 } = require('../actions');
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
-const TEST_VALUE_DEFAULT_MISSIONS_7 = [undefined,undefined,undefined,undefined,undefined,undefined,undefined];
 const TEST_VALUE_USER_7 = 
   [{
     align : 1,
