@@ -142,9 +142,7 @@ const ACTION_MAP = {
 
 const TEST_STEPS_BEFORE_INIT = [];
 const TEST_STEPS_INIT = [ACTION_INIT_GAME];
-const TEST_STEPS_FIRST_ROUND = [ACTION_INIT_GAME,ACTION_START_ROUND];
 const TEST_STEPS_FIRST_BUILD_TEAM = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1];
-const TEST_STEPS_FIRST_USER_VOTE_SUCCESS = [ACTION_INIT_GAME,ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1,ACTION_VOTE_1_SUCCESS];
 
 const TEST_STEPS_VOTES_ALL_SUCCESS = [
   ACTION_VOTE_1_FAIL,
@@ -155,6 +153,7 @@ const TEST_STEPS_VOTES_ALL_SUCCESS = [
   ACTION_VOTE_6_SUCCESS,
   ACTION_VOTE_7_SUCCESS
 ];
+
 const TEST_STEPS_VOTES_ALL_FAIL = [
   ACTION_VOTE_1_FAIL,
   ACTION_VOTE_2_FAIL,
@@ -168,12 +167,10 @@ const TEST_STEPS_VOTES_ALL_FAIL = [
 const TEST_STEPS_VOTES_ALL_SUCCESS_DRAWRESULT = TEST_STEPS_VOTES_ALL_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT);
 const TEST_STEPS_VOTES_ALL_FAIL_DRAWRESULT = TEST_STEPS_VOTES_ALL_FAIL.concat(ACTION_DRAW_VOTES_RESULT);
 const TEST_STEPS_ONE_VOTE_ROUND = [ACTION_START_ROUND,ACTION_BUILD_TEAM_7_1];
-const TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT = TEST_STEPS_ONE_VOTE_ROUND.concat(TEST_STEPS_VOTES_ALL_FAIL).concat(ACTION_DRAW_VOTES_RESULT);
-
-const TEST_STEPS_FIRST_ALL_VOTED_SUCCESS = TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS);
-const TEST_STEPS_FIRST_ALL_VOTED_FAIL = TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_FAIL);
-const TEST_STEPS_FIRST_DRAWRESULT_SUCCESS = TEST_STEPS_FIRST_ALL_VOTED_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT);
-const TEST_STEPS_FIRST_DRAWRESULT_FAIL = TEST_STEPS_FIRST_ALL_VOTED_FAIL.concat(ACTION_DRAW_VOTES_RESULT);
+const TEST_STEPS_ONE_VOTE_ROUND_ALL_VOTES_FAIL_DRAWRESULT = 
+  TEST_STEPS_ONE_VOTE_ROUND
+  .concat(TEST_STEPS_VOTES_ALL_FAIL)
+  .concat(ACTION_DRAW_VOTES_RESULT);
 
 const TEST_STEPS_VOTE_5_FAIL = 
   TEST_STEPS_INIT
@@ -317,7 +314,7 @@ describe('basic 7 people game',()=>{
 
   describe('start round',() => {
     describe('not end game',() => {
-      const state = testHelper(TEST_STEPS_FIRST_ROUND);
+      const state = testHelper(TEST_STEPS_INIT.concat(ACTION_START_ROUND));
       const { status, value } = state; 
       it('should return correct state',() => {
         expect(status).equal(STATUS_TEAM_BUILD);
@@ -433,7 +430,7 @@ describe('basic 7 people game',()=>{
       })
     });
     describe('all user vote',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_SUCCESS);
+      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS));
       const { status, value } = _state; 
       it('should return correct state',()=>{
         expect(status).equal(STATUS_TEAM_VOTED);
@@ -444,7 +441,7 @@ describe('basic 7 people game',()=>{
   describe('draw vote result',() => {
     const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
     describe('vote failed',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_FAIL.concat(ACTION_DRAW_VOTES_RESULT));
+      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_FAIL).concat(ACTION_DRAW_VOTES_RESULT));
       const { status, value } = _state; 
       it('should return correct state',() => {
         expect(status).equal(STATUS_INIT);
@@ -453,7 +450,7 @@ describe('basic 7 people game',()=>{
       });
     })
     describe('vote succeed',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_ALL_VOTED_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT));
+      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS).concat(ACTION_DRAW_VOTES_RESULT));
       const { status, value } = _state; 
       it('should return correct state',() => {
         expect(status).equal(STATUS_MISSION);
