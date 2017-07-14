@@ -430,7 +430,7 @@ describe('basic 7 people game',()=>{
       })
     });
     describe('all user vote',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS));
+      const _state = testHelper(state,TEST_STEPS_VOTES_ALL_SUCCESS);
       const { status, value } = _state; 
       it('should return correct state',()=>{
         expect(status).equal(STATUS_TEAM_VOTED);
@@ -441,7 +441,7 @@ describe('basic 7 people game',()=>{
   describe('draw vote result',() => {
     const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
     describe('vote failed',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_FAIL).concat(ACTION_DRAW_VOTES_RESULT));
+      const _state = testHelper(state,TEST_STEPS_VOTES_ALL_FAIL.concat(ACTION_DRAW_VOTES_RESULT));
       const { status, value } = _state; 
       it('should return correct state',() => {
         expect(status).equal(STATUS_INIT);
@@ -450,7 +450,7 @@ describe('basic 7 people game',()=>{
       });
     })
     describe('vote succeed',() => {
-      const _state = testHelper(state,TEST_STEPS_FIRST_BUILD_TEAM.concat(TEST_STEPS_VOTES_ALL_SUCCESS).concat(ACTION_DRAW_VOTES_RESULT));
+      const _state = testHelper(state,TEST_STEPS_VOTES_ALL_SUCCESS.concat(ACTION_DRAW_VOTES_RESULT));
       const { status, value } = _state; 
       it('should return correct state',() => {
         expect(status).equal(STATUS_MISSION);
