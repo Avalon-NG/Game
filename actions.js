@@ -6,7 +6,9 @@ const {
 	ACTION_DRAW_VOTES_RESULT,
 	ACTION_EXECUTE_MISSION,
 	ACTION_DRAW_MISSIONS_RESULT,
-	ACTION_ASSASSINATE
+	ACTION_ASSASSINATE,
+	ACTION_DRAW_GODDESS_RESULT,
+	ACTION_EXECUTE_GODDESS
 } = require('./config');
 
 const initGame = ({ users, isSetGoddess = false }) => {
@@ -65,6 +67,19 @@ const assassin = ( index ) => {
 	}
 }
 
+const executeGoddess = ( index ) => {
+	return {
+		type : ACTION_EXECUTE_GODDESS,
+		index
+	}
+}
+
+const drawGoddessResult = () => {
+	return {
+		type : ACTION_DRAW_GODDESS_RESULT
+	}
+}
+
 module.exports = {
 	initGame,
 	startRound,
@@ -73,5 +88,7 @@ module.exports = {
 	drawVotesResult,
 	executeMission,
 	drawMissionsResult,
-	assassin
+	assassin,
+	executeGoddess,
+	drawGoddessResult
 }
