@@ -12,3 +12,33 @@ const reducer = getReducer();
 let state = reducer({}, actionCreators.startRound());
 
 ```
+### Actions
+```javascript
+// init the game
+initGame({
+  users,
+  isSetGoddess
+});
+// start the round
+startRound();
+// build the knights to mission
+buildTeam({
+  knights
+});
+// vote
+vote({
+  index,
+  vote // -1 for reject, 1 for approve
+});
+// draw votes result
+drawVotesResult();
+// the knight execute mission
+executeMission({
+  index,
+  mission // -1 for fail, 1 for success
+});
+// draw missions result
+drawMissionsResult();
+// assassin
+assassin(index);
+```
