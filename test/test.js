@@ -14,7 +14,9 @@ const {
 	STATUS_GAMEOVER_SUCCESS,
   STATUS_GAMEOVER_FAIL,
 	STATUS_ASSASSIN,
-  ROLE_MERLIN
+  ROLE_MERLIN,
+	STATUS_GODDESS,
+	STATUS_GODDESS_FINISHED
 } = require('../config');
 
 //const validate = require('../validate');
@@ -29,6 +31,7 @@ const {
   drawMissionsResult,
   assassin
 } = actionCreators;
+
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_USER_7 = 
@@ -531,6 +534,9 @@ describe('basic 7 people game',()=>{
         expect(status).equal(STATUS_GAMEOVER_SUCCESS);
       })
     })
+  })
+  describe('goddess', () => {
+
   })
 
 })
