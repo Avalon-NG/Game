@@ -1,6 +1,6 @@
-const makeFSMReducer = require('fsm-reducer');
+const makeFSM = require('fsm-reducer');
 const { expect } = require('chai');
-const { STATE_MAP , ACTIONS } = require('../fsm-avalon');
+const { getFSM, actionCreators } = require('../index');
 const { 
   NEEDED_KNIGHTS_LIST, 
   NEEDED_FAILED_LIST,
@@ -28,7 +28,7 @@ const {
   executeMission,
   drawMissionsResult,
   assassin
-} = require('../actions');
+} = actionCreators;
 
 const TEST_VALUE_DEFAULT_VOTES_7 = [0,0,0,0,0,0,0];
 const TEST_VALUE_USER_7 = 
@@ -268,7 +268,7 @@ const TEST_STEPS_ASSASSIN =
   .concat(TEST_STEPS_MISSIONS_SUCCESS_3_DRAWRESULT)
   .concat(ACTION_START_ROUND);
 
-const reducer = makeFSMReducer(STATE_MAP,ACTIONS);
+const { reducer, getValidateError, getActions } = getFSM();
 
 const testHelper = (state, testSteps) => {
   let _state, _testSteps;
@@ -292,6 +292,7 @@ describe('basic 7 people game',()=>{
 
   describe('before init',() => {
     const state = testHelper(TEST_STEPS_BEFORE_INIT);
+    reducer.errors === null
     it('should return correct state',()=>{
       expect(state.status).equal(STATUS_BEFORE_INIT);
     })

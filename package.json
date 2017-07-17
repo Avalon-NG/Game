@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha -w",
-    "test:ci" : "mocha"
+    "test:ci": "mocha"
   },
   "author": "jeno5980515",
   "license": "MIT",
@@ -14,9 +14,9 @@
     "url": "https://github.com/avalon-ng/fsm-avalon"
   },
   "dependencies": {
-    "fsm-reducer": "^1.0.1"
+    "fsm-reducer": "^1.0.2"
   },
-  "devDependencies":{
+  "devDependencies": {
     "chai": "^4.0.2",
     "mocha": "^3.4.2"
   }

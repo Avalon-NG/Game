@@ -1,12 +1,17 @@
 const { STATE_MAP, ACTIONS } = require('./fsm-avalon');
 const actionCreators = require('./actions');
-const makeFSMReducer = require('fsm-reducer');
+const makeFSM = require('fsm-reducer');
 
-const getReducer = () => {
-	return makeFSMReducer(STATE_MAP,ACTIONS);
+const getFSM = () => {
+	const { reducer, getValidateError, getActions } = makeFSM(STATE_MAP,ACTIONS);
+	return {
+		reducer,
+		getValidateError,
+		getActions
+	}
 }
 
 module.exports = {
-	getReducer,
+	getFSM,
 	actionCreators
 }
