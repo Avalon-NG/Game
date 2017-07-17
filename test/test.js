@@ -323,7 +323,6 @@ describe('basic 7 people game',()=>{
       const _state = reducer(state,initGame({ users : [1,2,3,4,5,6,7,8,9,10,11] }));
       expect(getValidateError()).not.equal(null);
     })
-
   })
 
   describe('start round',() => {
@@ -421,12 +420,25 @@ describe('basic 7 people game',()=>{
   })
 
   describe('choose knights',() => {
-    const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
-    const { status, value } = state; 
+    const state = testHelper(TEST_STEPS_INIT.concat(ACTION_START_ROUND));
     it('should return correct state',() => {
+      const _state = testHelper(state,ACTION_BUILD_TEAM_7_1);
+      const { status, value } = _state; 
       expect(status).equal(STATUS_TEAM_VOTING);
       expect(value.votes).deep.equal(TEST_VALUE_DEFAULT_VOTES_7);
       expect(value.captain).equal(0);
+    })
+    it('should return error if amount of knights error',() => {
+      const _state = reducer(state,buildTeam({ knights : [] }));
+      expect(getValidateError()).not.equal(null);
+    })
+    it('should return error if have the same index',() => {
+      const _state = reducer(state,buildTeam({ knights : [1,1] }));
+      expect(getValidateError()).not.equal(null);
+    })
+    it('should return error if index error',() => {
+      const _state = reducer(state,buildTeam({ knights : [0,7] }));
+      expect(getValidateError()).not.equal(null);
     })
   })
 

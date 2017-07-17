@@ -192,15 +192,24 @@ const VALIDATE_MAP = {
 		} else if ( usersAmount > 10 ){
 			return 'users should be less or qual to 10';
 		}
-		if ( typeof isSetGoddess !== 'boolean' ){
-			return 'isSetGoddess should be boolean'; 
-		}
-		return null;
-	},
-	[ACTION_START_ROUND] : (state) => {
+
 		return null;
 	},
 	[ACTION_BUILD_TEAM] : (state,{knights}) => {
+		const { neededKnights, missionResults, users } = state;
+		const userAmount = users.length;
+		const round = missionResults.length;
+		const neededKnight = neededKnights[round];
+		if ( knights.length !== neededKnight ){
+			return 'error amount of knights';
+		}
+		if ( new Set(knights).size !== knights.length ){
+			return 'cannot have same index';
+		}
+		if ( knights.filter((el) => el < 0 || el > userAmount - 1 ).length !== 0 ){
+			return 'error index';
+		}
+		
 		return null;
 	},
 	[ACTION_VOTE] : (state,{ index , vote }) => {
