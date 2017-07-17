@@ -1,9 +1,11 @@
-const { STATE_MAP, ACTIONS } = require('./fsm-avalon');
+const { STATE_MAP, ACTIONS, VALIDATE_MAP } = require('./fsm-avalon');
 const actionCreators = require('./actions');
 const makeFSM = require('fsm-reducer');
 
 const getFSM = () => {
-	const { reducer, getValidateError, getActions } = makeFSM(STATE_MAP,ACTIONS);
+	const { reducer, getValidateError, getActions } = makeFSM(STATE_MAP,ACTIONS,{ 
+		validateMap : VALIDATE_MAP 
+	});
 	return {
 		reducer,
 		getValidateError,

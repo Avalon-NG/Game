@@ -184,8 +184,44 @@ const STATE_MAP = {
 	}
 }
 
+const VALIDATE_MAP = {
+	[ACTION_INIT_GAME] : (state, { users, isSetGoddess = false }) => {
+		const usersAmount = users.length;
+		if ( usersAmount < 5 ){
+			return 'users should be greater or qual to 5.';
+		} else if ( usersAmount > 10 ){
+			return 'users should be less or qual to 10';
+		}
+		if ( typeof isSetGoddess !== 'boolean' ){
+			return 'isSetGoddess should be boolean'; 
+		}
+		return null;
+	},
+	[ACTION_START_ROUND] : (state) => {
+		return null;
+	},
+	[ACTION_BUILD_TEAM] : (state,{knights}) => {
+		return null;
+	},
+	[ACTION_VOTE] : (state,{ index , vote }) => {
+		return null;
+	},
+	[ACTION_DRAW_VOTES_RESULT] : (state) => {
+		return null;
+	},
+	[ACTION_EXECUTE_MISSION] : (state,{ index , mission }) => {
+		return null;
+	},
+	[ACTION_DRAW_MISSIONS_RESULT] : (state) => {
+		return null;
+	},
+	[ACTION_ASSASSINATE] : (state,{ index }) => {
+		return null;
+	}
+};
 
 module.exports = {
 	STATE_MAP,
-	ACTIONS
+	ACTIONS,
+	VALIDATE_MAP
 }

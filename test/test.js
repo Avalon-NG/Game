@@ -302,9 +302,10 @@ describe('basic 7 people game',()=>{
   })
 
   describe('init game',() => {
-    const state = testHelper(TEST_STEPS_INIT);
-    const { status, value } = state; 
+    const state = testHelper(TEST_STEPS_BEFORE_INIT);
     it('should return correct state',() => {
+      const _state = testHelper(TEST_STEPS_INIT);
+      const { status, value } = _state; 
       expect(status).equal(STATUS_INIT);
       expect(value.users).deep.equal(TEST_VALUE_USER_7);
       expect(value.config.isSetGoddess).equal(false);
@@ -314,6 +315,15 @@ describe('basic 7 people game',()=>{
       expect(value.failedVotes).equal(0);
       expect(value.captain).equal(-1);
     })
+    it('should get error when user less than 5',() => {
+      const _state = reducer(state,initGame({ users : [1,2,3,4] }));
+      expect(getValidateError()).not.equal(null);
+    })
+    it('should get error when user more than 10',() => {
+      const _state = reducer(state,initGame({ users : [1,2,3,4,5,6,7,8,9,10,11] }));
+      expect(getValidateError()).not.equal(null);
+    })
+
   })
 
   describe('start round',() => {
