@@ -20,7 +20,6 @@ const {
   STATUS_GODDESS_FINISHED
 } = require('../config');
 
-//const validate = require('../validate');
 
 const { 
   initGame,
