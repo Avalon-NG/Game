@@ -5,18 +5,18 @@ const {
   NEEDED_KNIGHTS_LIST, 
   NEEDED_FAILED_LIST,
   STATUS_BEFORE_INIT,
-	STATUS_INIT,
-	STATUS_TEAM_BUILD,
-	STATUS_TEAM_VOTING,
-	STATUS_TEAM_VOTED,
-	STATUS_MISSION,
-	STATUS_MISSION_FINISHED,
-	STATUS_GAMEOVER_SUCCESS,
+  STATUS_INIT,
+  STATUS_TEAM_BUILD,
+  STATUS_TEAM_VOTING,
+  STATUS_TEAM_VOTED,
+  STATUS_MISSION,
+  STATUS_MISSION_FINISHED,
+  STATUS_GAMEOVER_SUCCESS,
   STATUS_GAMEOVER_FAIL,
-	STATUS_ASSASSIN,
+  STATUS_ASSASSIN,
   ROLE_MERLIN,
-	STATUS_GODDESS,
-	STATUS_GODDESS_FINISHED
+  STATUS_GODDESS,
+  STATUS_GODDESS_FINISHED
 } = require('../config');
 
 //const validate = require('../validate');
@@ -295,7 +295,6 @@ describe('basic 7 people game',()=>{
 
   describe('before init',() => {
     const state = testHelper(TEST_STEPS_BEFORE_INIT);
-    reducer.errors === null
     it('should return correct state',()=>{
       expect(state.status).equal(STATUS_BEFORE_INIT);
     })
@@ -446,13 +445,26 @@ describe('basic 7 people game',()=>{
     const state = testHelper(TEST_STEPS_FIRST_BUILD_TEAM);
     const { status, value } = state; 
     describe('one user vote', () => {    
-      const _state = testHelper(state,ACTION_VOTE_1_SUCCESS);  
-      const { status, value } = _state; 
       it('should return correct state', () => {
+        const _state = testHelper(state,ACTION_VOTE_1_SUCCESS);  
+        const { status, value } = _state; 
         expect(status).equal(STATUS_TEAM_VOTING);
         expect(value.votes[0]).equal(1);
         expect(value.votes[1]).equal(0);
         expect(value.votes[2]).equal(0);
+      })
+      it('should get error when user vote is not 1 or -1',() => {
+        const _state = reducer(state,vote({ index : 0 , vote : 2 }));
+        expect(getValidateError()).not.equal(null);
+      })
+      it('should get error when index out of bound',() => {
+        const _state = reducer(state,vote({ index : 7 , vote : 1 }));
+        expect(getValidateError()).not.equal(null);
+      })
+      it('should get error when index of vote already exist',() => {
+        let _state = reducer(state,vote({ index : 6 , vote : 1 }));
+        _state = reducer(_state,vote({ index : 6 , vote : 1 }));
+        expect(getValidateError()).not.equal(null);
       })
     });
     describe('all user vote',() => {

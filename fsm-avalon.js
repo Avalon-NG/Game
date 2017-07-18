@@ -213,6 +213,16 @@ const VALIDATE_MAP = {
 		return null;
 	},
 	[ACTION_VOTE] : (state,{ index , vote }) => {
+		const { users, votes } = state;
+		if ( vote !== 1 && vote !== -1 ){
+			return 'vote should be 1 or -1';
+		}
+		if ( index < 0 || index > users.length - 1 ){
+			return 'index out of bound';
+		}
+		if ( votes[index] !== 0 ){
+			return 'the index of vote already exist';
+		}
 		return null;
 	},
 	[ACTION_DRAW_VOTES_RESULT] : (state) => {
