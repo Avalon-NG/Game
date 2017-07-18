@@ -511,6 +511,23 @@ describe('basic 7 people game',()=>{
         expect(value.missions[1]).equal(1);
         expect(value.missions[2]).equal(undefined);
       })
+      it('should get error when user vote is not 1 or -1',() => {
+        const _state = reducer(state,executeMission({ index : 0 , mission : 2 }));
+        expect(getValidateError()).not.equal(null);
+      })
+      it('should get error when index out of bound',() => {
+        const _state = reducer(state,executeMission({ index : 7 , mission : 1 }));
+        expect(getValidateError()).not.equal(null);
+      })
+      it('should get error when index of vote already exist',() => {
+        let _state = reducer(state,executeMission({ index : 0 , mission : 1 }));
+        _state = reducer(_state,executeMission({ index : 0 , mission : 1 }));
+        expect(getValidateError()).not.equal(null);
+      })
+      it('should get error when index is not knight',() => {
+        const _state = reducer(state,executeMission({ index : 6 , mission : 1 }));
+        expect(getValidateError()).not.equal(null);
+      })
     })
     describe('do all missions',() => {
       it('should return correct state',() => {
