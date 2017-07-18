@@ -20,6 +20,7 @@ const {
   NEEDED_FAILED_LIST,
   NEEDED_KNIGHTS_LIST,
   ROLE_MERLIN,
+	ROLE_OBERON,
   STATUS_GODDESS,
   STATUS_GODDESS_FINISHED,
   ACTION_DRAW_GODDESS_RESULT,
@@ -242,6 +243,13 @@ const VALIDATE_MAP = {
     return null;
   },
   [ACTION_ASSASSINATE] : (state,{ index }) => {
+    const { users } = state;
+    if ( index < 0 || index > users.length - 1 ){
+      return 'index out of bound';
+    }
+    if ( users[index].align === -1 && users[index].role !== ROLE_OBERON ){
+      return 'cannot assassinate bad guys except Oberon';
+    }
     return null;
   }
 };

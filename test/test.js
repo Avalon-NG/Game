@@ -15,6 +15,7 @@ const {
   STATUS_GAMEOVER_FAIL,
   STATUS_ASSASSIN,
   ROLE_MERLIN,
+  ROLE_OBERON,
   STATUS_GODDESS,
   STATUS_GODDESS_FINISHED
 } = require('../config');
@@ -29,7 +30,7 @@ const {
   drawVotesResult,
   executeMission,
   drawMissionsResult,
-  assassin
+  assassinate
 } = actionCreators;
 
 
@@ -39,16 +40,16 @@ const TEST_VALUE_USER_7 =
     align : 1,
     role : ROLE_MERLIN
   },{
-    align : 1,
-    role : 'Normal'
-  },{
-    align : 1,
-    role : 'Normal'
-  },{
-    align : 1,
-    role : 'Normal'
-  },{
     align : -1,
+    role : ROLE_OBERON
+  },{
+    align : 1,
+    role : 'Normal'
+  },{
+    align : 1,
+    role : 'Normal'
+  },{
+    align : 1,
     role : 'Normal'
   },{
     align : -1,
@@ -139,8 +140,8 @@ const ACTION_MAP = {
   [ACTION_MISSION_6_FAIL] : executeMission({ index : 5 , mission : -1 }),
   [ACTION_MISSION_7_FAIL] : executeMission({ index : 6 , mission : -1 }),
   [ACTION_DRAW_MISSIONS_RESULT] : drawMissionsResult(),
-  [ACTION_ASSASSIN_SUCCESS] : assassin(0),
-  [ACTION_ASSASSIN_FAIL] : assassin(1)
+  [ACTION_ASSASSIN_SUCCESS] : assassinate(0),
+  [ACTION_ASSASSIN_FAIL] : assassinate(2)
 }
 
 const TEST_STEPS_BEFORE_INIT = [];
@@ -569,20 +570,39 @@ describe('basic 7 people game',()=>{
     })
   })
 
-  describe('assassin', () => {
+  describe('assassinate', () => {
     const state = testHelper(TEST_STEPS_ASSASSIN);
-    describe('assassin correct', () => {
-      const _state = testHelper(state,ACTION_ASSASSIN_SUCCESS);
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_GAMEOVER_FAIL);
+    describe('assassinate good guys',() => {
+      describe('assassin correct', () => {
+        const _state = testHelper(state,ACTION_ASSASSIN_SUCCESS);
+        it('should return correct state',() => {
+          const { status, value } = _state;
+          expect(status).equal(STATUS_GAMEOVER_FAIL);
+        })
+      })
+      describe('assassinate fail', () => {
+        const _state = testHelper(state,ACTION_ASSASSIN_FAIL);
+        it('should return correct state',() => {
+          const { status, value } = _state;
+          expect(status).equal(STATUS_GAMEOVER_SUCCESS);
+        })
       })
     })
-    describe('assassin fail', () => {
-      const _state = testHelper(state,ACTION_ASSASSIN_FAIL);
-      it('should return correct state',() => {
-        const { status, value } = _state;
-        expect(status).equal(STATUS_GAMEOVER_SUCCESS);
+    describe('assassinate bad guys',() => {
+      describe('assassinate oberon',() => {
+        it('should return correct state',() =>{
+          const _state = reducer(state,assassinate(1));
+          it('should return correct state',() => {
+            const { status, value } = _state;
+            expect(status).equal(STATUS_GAMEOVER_SUCCESS);
+          })
+        })
+      })
+      describe('assassinate other bad guys',() => {
+        it('should return error',() =>{
+          const _state = reducer(state,assassinate(6));
+          expect(getValidateError()).not.equal(null);
+        })
       })
     })
   })

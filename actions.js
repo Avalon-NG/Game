@@ -60,7 +60,7 @@ const drawMissionsResult = () => {
   }
 }
 
-const assassin = ( index ) => {
+const assassinate = ( index ) => {
   return {
     type : ACTION_ASSASSINATE,
     index
@@ -88,7 +88,7 @@ module.exports = {
   drawVotesResult,
   executeMission,
   drawMissionsResult,
-  assassin,
+  assassinate,
   executeGoddess,
   drawGoddessResult
 }
